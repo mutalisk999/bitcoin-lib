@@ -61,3 +61,5 @@ func LoadUint64FromBytes(bytes []byte) uint64 {
 		(byte32 << 24) | (byte24 << 16) | (byte16 << 8) | byte8)
 }
 
+// TODO add Dump and Load implement for float32 and float64
+
