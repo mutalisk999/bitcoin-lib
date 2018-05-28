@@ -1,8 +1,8 @@
 package utility
 
 import (
-	"testing"
 	"fmt"
+	"testing"
 )
 
 func TestDumpUint16ToBytes(t *testing.T) {
@@ -29,6 +29,20 @@ func TestDumpUint64ToBytes(t *testing.T) {
 	}
 }
 
+func TestDumpFloat32ToBytes(t *testing.T) {
+	bytes := DumpFloat32ToBytes(1.234567)
+	for i := 0; i < len(bytes); i++ {
+		fmt.Printf("f32 bytes[%d]=%02x\n", i, bytes[i])
+	}
+}
+
+func TestDumpFloat64ToBytes(t *testing.T) {
+	bytes := DumpFloat64ToBytes(1.23456789012345)
+	for i := 0; i < len(bytes); i++ {
+		fmt.Printf("f64 bytes[%d]=%02x\n", i, bytes[i])
+	}
+}
+
 func TestLoadUint16FromBytes(t *testing.T) {
 	bytes := []byte{0x02, 0x01}
 	u16 := LoadUint16FromBytes(bytes)
@@ -47,3 +61,14 @@ func TestLoadUint64FromBytes(t *testing.T) {
 	fmt.Printf("u64: 0x%016x\n", u64)
 }
 
+func TestLoadFloat32FromBytes(t *testing.T) {
+	bytes := []byte{0x4b, 0x06, 0x9e, 0x3f}
+	f32 := LoadFloat32FromBytes(bytes)
+	fmt.Println("f32:", f32)
+}
+
+func TestLoadFloat64FromBytes(t *testing.T) {
+	bytes := []byte{0xdd, 0x59, 0x8c, 0x42, 0xca, 0xc0, 0xf3, 0x3f}
+	f64 := LoadFloat64FromBytes(bytes)
+	fmt.Println("f64:", f64)
+}

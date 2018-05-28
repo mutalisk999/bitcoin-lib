@@ -3,7 +3,6 @@ package serialize
 import "io"
 import (
 	"utility"
-	"unsafe"
 )
 
 func packU8(writer io.Writer, data8 uint8) error {
@@ -16,7 +15,7 @@ func packU8(writer io.Writer, data8 uint8) error {
 
 func packU16(writer io.Writer, data16 uint16) error {
 	bytes := utility.DumpUint16ToBytes(utility.ConvertUint16ToLittleEndian(data16))
-	utility.Assert(len(bytes)==2, "incorrect bytes length, not 2")
+	utility.Assert(len(bytes) == 2, "incorrect bytes length, not 2")
 	_, err := writer.Write(bytes)
 	if err != nil {
 		return err
@@ -26,7 +25,7 @@ func packU16(writer io.Writer, data16 uint16) error {
 
 func packU32(writer io.Writer, data32 uint32) error {
 	bytes := utility.DumpUint32ToBytes(utility.ConvertUint32ToLittleEndian(data32))
-	utility.Assert(len(bytes)==4, "incorrect bytes length, not 4")
+	utility.Assert(len(bytes) == 4, "incorrect bytes length, not 4")
 	_, err := writer.Write(bytes)
 	if err != nil {
 		return err
@@ -36,7 +35,7 @@ func packU32(writer io.Writer, data32 uint32) error {
 
 func packU64(writer io.Writer, data64 uint64) error {
 	bytes := utility.DumpUint64ToBytes(utility.ConvertUint64ToLittleEndian(data64))
-	utility.Assert(len(bytes)==8, "incorrect bytes length, not 8")
+	utility.Assert(len(bytes) == 8, "incorrect bytes length, not 8")
 	_, err := writer.Write(bytes)
 	if err != nil {
 		return err
@@ -45,12 +44,9 @@ func packU64(writer io.Writer, data64 uint64) error {
 }
 
 func packF32(writer io.Writer, data32 float32) error {
-	data32ptr := uintptr(unsafe.Pointer(&data32))
-	byte8 := *(*byte)(unsafe.Pointer(data32ptr))
-	byte16 := *(*byte)(unsafe.Pointer(data32ptr + uintptr(1)))
-	byte24 := *(*byte)(unsafe.Pointer(data32ptr + uintptr(2)))
-	byte32 := *(*byte)(unsafe.Pointer(data32ptr + uintptr(3)))
-	_, err := writer.Write([]byte{byte8, byte16, byte24, byte32})
+	bytes := utility.DumpFloat32ToBytes(data32)
+	utility.Assert(len(bytes) == 4, "incorrect bytes length, not 4")
+	_, err := writer.Write(bytes)
 	if err != nil {
 		return err
 	}
@@ -58,16 +54,9 @@ func packF32(writer io.Writer, data32 float32) error {
 }
 
 func packF64(writer io.Writer, data64 float64) error {
-	data64ptr := uintptr(unsafe.Pointer(&data64))
-	byte8 := *(*byte)(unsafe.Pointer(data64ptr))
-	byte16 := *(*byte)(unsafe.Pointer(data64ptr + uintptr(1)))
-	byte24 := *(*byte)(unsafe.Pointer(data64ptr + uintptr(2)))
-	byte32 := *(*byte)(unsafe.Pointer(data64ptr + uintptr(3)))
-	byte40 := *(*byte)(unsafe.Pointer(data64ptr + uintptr(4)))
-	byte48 := *(*byte)(unsafe.Pointer(data64ptr + uintptr(5)))
-	byte56 := *(*byte)(unsafe.Pointer(data64ptr + uintptr(6)))
-	byte64 := *(*byte)(unsafe.Pointer(data64ptr + uintptr(7)))
-	_, err := writer.Write([]byte{byte8, byte16, byte24, byte32, byte40, byte48, byte56, byte64})
+	bytes := utility.DumpFloat64ToBytes(data64)
+	utility.Assert(len(bytes) == 8, "incorrect bytes length, not 8")
+	_, err := writer.Write(bytes)
 	if err != nil {
 		return err
 	}
@@ -119,12 +108,7 @@ func unpackF32(reader io.Reader) (float32, error) {
 	if err != nil {
 		return 0, err
 	}
-	var f32 float32
-	byte32ptr := uintptr(unsafe.Pointer(&f32))
-	*(*byte)(unsafe.Pointer(byte32ptr)) = bytes[0]
-	*(*byte)(unsafe.Pointer(byte32ptr + uintptr(1))) = bytes[1]
-	*(*byte)(unsafe.Pointer(byte32ptr + uintptr(2))) = bytes[2]
-	*(*byte)(unsafe.Pointer(byte32ptr + uintptr(3))) = bytes[3]
+	f32 := utility.LoadFloat32FromBytes(bytes[0:4])
 	return f32, nil
 }
 
@@ -134,16 +118,7 @@ func unpackF64(reader io.Reader) (float64, error) {
 	if err != nil {
 		return 0, err
 	}
-	var f64 float64
-	byte64ptr := uintptr(unsafe.Pointer(&f64))
-	*(*byte)(unsafe.Pointer(byte64ptr)) = bytes[0]
-	*(*byte)(unsafe.Pointer(byte64ptr + uintptr(1))) = bytes[1]
-	*(*byte)(unsafe.Pointer(byte64ptr + uintptr(2))) = bytes[2]
-	*(*byte)(unsafe.Pointer(byte64ptr + uintptr(3))) = bytes[3]
-	*(*byte)(unsafe.Pointer(byte64ptr + uintptr(4))) = bytes[4]
-	*(*byte)(unsafe.Pointer(byte64ptr + uintptr(5))) = bytes[5]
-	*(*byte)(unsafe.Pointer(byte64ptr + uintptr(6))) = bytes[6]
-	*(*byte)(unsafe.Pointer(byte64ptr + uintptr(7))) = bytes[7]
+	f64 := utility.LoadFloat64FromBytes(bytes[0:8])
 	return f64, nil
 }
 

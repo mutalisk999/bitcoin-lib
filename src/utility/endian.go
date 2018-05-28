@@ -5,7 +5,6 @@ import "unsafe"
 var isEndianInit = false
 var isLittleEndian = false
 
-
 func IsLittleEndian() bool {
 	if isEndianInit {
 		return isLittleEndian
@@ -18,7 +17,7 @@ func IsLittleEndian() bool {
 
 	if *lowUint8ptr == 0x01 && *highUint8ptr == 0x02 {
 		isLittleEndian = false
-	} else if *lowUint8ptr == 0x02 && *highUint8ptr== 0x01 {
+	} else if *lowUint8ptr == 0x02 && *highUint8ptr == 0x01 {
 		isLittleEndian = true
 	} else {
 		panic("IsLittleEndian(): can not judge if platform is little endian or not")
@@ -187,4 +186,3 @@ func ConvertUint64FromBigEndian(data64 uint64) uint64 {
 			(byte40 << 24) | (byte48 << 16) | (byte56 << 8) | byte64)
 	}
 }
-

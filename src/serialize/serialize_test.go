@@ -1,10 +1,10 @@
 package serialize
 
 import (
-	"testing"
 	"bytes"
-	"io"
 	"fmt"
+	"io"
+	"testing"
 )
 
 func TestPackByte(t *testing.T) {
@@ -160,4 +160,3 @@ func TestUnPackFloat64(t *testing.T) {
 	f64, _ := UnPackFloat64(bufReader)
 	fmt.Println("unpack float64:", f64)
 }
-
