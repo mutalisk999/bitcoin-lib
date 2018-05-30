@@ -84,6 +84,19 @@ func TestPackFloat64(t *testing.T) {
 	fmt.Println("pack float64:", bytesBuf.Bytes())
 }
 
+func TestPackCompactSize(t *testing.T) {
+	bytesBuf := bytes.NewBuffer([]byte{})
+	bufWriter := io.Writer(bytesBuf)
+	PackCompactSize(bufWriter, 0x1f)
+	bufWriter = io.Writer(bytesBuf)
+	PackCompactSize(bufWriter, 0x1fff)
+	bufWriter = io.Writer(bytesBuf)
+	PackCompactSize(bufWriter, 0x1fffffff)
+	bufWriter = io.Writer(bytesBuf)
+	PackCompactSize(bufWriter, 0x1fffffffffffffff)
+	fmt.Println("pack compact:", bytesBuf.Bytes())
+}
+
 func TestUnPackByte(t *testing.T) {
 	bytesBuf := bytes.NewBuffer([]byte{1})
 	bufReader := io.Reader(bytesBuf)
@@ -159,4 +172,15 @@ func TestUnPackFloat64(t *testing.T) {
 	bufReader := io.Reader(bytesBuf)
 	f64, _ := UnPackFloat64(bufReader)
 	fmt.Println("unpack float64:", f64)
+}
+
+func TestUnPackCompactSize(t *testing.T) {
+	bytesBuf := bytes.NewBuffer([]byte{31, 253, 255, 31, 254, 255, 255, 255, 31, 255,
+		255, 255, 255, 255, 255, 255, 255, 31})
+	bufReader := io.Reader(bytesBuf)
+	ui8, _ := UnPackCompactSize(bufReader)
+	ui16, _ := UnPackCompactSize(bufReader)
+	ui32, _ := UnPackCompactSize(bufReader)
+	ui64, _ := UnPackCompactSize(bufReader)
+	fmt.Printf("unpack compact: %x %x %x %x\n", ui8, ui16, ui32, ui64)
 }

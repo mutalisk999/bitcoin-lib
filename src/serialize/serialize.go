@@ -3,6 +3,7 @@ package serialize
 import "io"
 import (
 	"utility"
+	"errors"
 )
 
 func packU8(writer io.Writer, data8 uint8) error {
@@ -166,6 +167,33 @@ func PackFloat64(writer io.Writer, f64 float64) error {
 	return packF64(writer, f64)
 }
 
+func PackCompactSize(writer io.Writer, ui64 uint64) error {
+	if ui64 < 253 {
+		return PackUint8(writer, uint8(ui64))
+	} else if ui64 <= (2 << 16 - 1) {
+		err := PackUint8(writer, uint8(253))
+		if err == nil {
+			return PackUint16(writer, uint16(ui64))
+		} else {
+			return err
+		}
+	} else if ui64 <= (2 << 32 - 1) {
+		err := PackUint8(writer, uint8(254))
+		if err == nil {
+			return PackUint32(writer, uint32(ui64))
+		} else {
+			return err
+		}
+	} else {
+		err := PackUint8(writer, uint8(255))
+		if err == nil {
+			return PackUint64(writer, uint64(ui64))
+		} else {
+			return err
+		}
+	}
+}
+
 func UnPackByte(reader io.Reader) (byte, error) {
 	ui8, err := unpackU8(reader)
 	return byte(ui8), err
@@ -214,3 +242,48 @@ func UnPackFloat32(reader io.Reader) (float32, error) {
 func UnPackFloat64(reader io.Reader) (float64, error) {
 	return unpackF64(reader)
 }
+
+func UnPackCompactSize(reader io.Reader) (uint64, error) {
+	ui8, err := UnPackUint8(reader)
+	if err != nil {
+		return uint64(0), err
+	}
+
+	if ui8 < 253 {
+		return uint64(ui8), nil
+	} else if ui8 == 253 {
+		ui16, err := UnPackUint16(reader)
+		if err != nil {
+			return uint64(ui16), err
+		} else {
+			if ui16 < 253 {
+				return uint64(ui16), errors.New("UnPackCompactSize: non canonical")
+			} else {
+				return uint64(ui16), nil
+			}
+		}
+	} else if ui8 == 254 {
+		ui32, err := UnPackUint32(reader)
+		if err != nil {
+			return uint64(ui32), err
+		} else {
+			if ui32 < 0x10000 {
+				return uint64(ui32), errors.New("UnPackCompactSize: non canonical")
+			} else {
+				return uint64(ui32), nil
+			}
+		}
+	} else {
+		ui64, err := UnPackUint64(reader)
+		if err != nil {
+			return uint64(ui64), err
+		} else {
+			if ui64 < 0x100000000 {
+				return uint64(ui64), errors.New("UnPackCompactSize: non canonical")
+			} else {
+				return uint64(ui64), nil
+			}
+		}
+	}
+}
+
