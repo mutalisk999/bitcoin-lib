@@ -5,19 +5,11 @@ import (
 	"fmt"
 )
 
-type Baseblob struct {
+type Byteblob struct {
 	data	[]byte
 }
 
-func DataReverse(dataIn []byte) []byte {
-	var dataRet []byte
-	for i := len(dataIn)-1; i >= 0; i-- {
-		dataRet = append(dataRet, dataIn[i])
-	}
-	return dataRet
-}
-
-func (b Baseblob) isValidHex(hexStr string) bool {
+func (b Byteblob) isValidHex(hexStr string) bool {
 	if hexStr[0] == '0' && hexStr[1] == 'x' {
 		hexStr = hexStr[2:]
 	}
@@ -36,33 +28,32 @@ func (b Baseblob) isValidHex(hexStr string) bool {
 	return true
 }
 
-func (b *Baseblob) SetHex(hexStr string) {
+func (b *Byteblob) SetHex(hexStr string) {
 	if hexStr[0] == '0' && hexStr[1] == 'x' {
 		hexStr = hexStr[2:]
 	}
 
 	Assert(b.isValidHex(hexStr), "invalid hex string")
 	blobLength := len(hexStr) / 2
-	for i := blobLength-1; i >= 0; i-- {
+	for i := 0; i < blobLength; i++ {
 		num1, _ := HexCharToNumber(hexStr[2*i])
 		num2, _ := HexCharToNumber(hexStr[2*i+1])
 		b.data = append(b.data, byte((num1 << 4) | num2))
 	}
 }
 
-func (b Baseblob) GetHex() string {
+func (b Byteblob) GetHex() string {
 	var stringRet string
-	dataRet := DataReverse(b.data)
-	for _, c := range dataRet {
+	for _, c := range b.data {
 		stringRet += fmt.Sprintf("%02x", c)
 	}
 	return stringRet
 }
 
-func (b Baseblob) GetData() []byte {
+func (b Byteblob) GetData() []byte {
 	return b.data
 }
 
-func (b Baseblob) GetDataSize() int {
+func (b Byteblob) GetDataSize() int {
 	return len(b.data)
 }
