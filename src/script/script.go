@@ -41,3 +41,49 @@ func (s Script) GetScriptBytes() []byte {
 	return s.data
 }
 
+
+type ScriptWitness struct {
+	stack [][]byte
+}
+
+func (s ScriptWitness) Pack(writer io.Writer) error {
+	err := serialize.PackCompactSize(writer, uint64(len(s.stack)))
+	if err != nil {
+		return err
+	}
+	for _, bytes := range s.stack {
+		err := serialize.PackCompactSize(writer, uint64(len(bytes)))
+		if err != nil {
+			return err
+		}
+		_, err = writer.Write(bytes[0:len(bytes)])
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (s* ScriptWitness) UnPack(reader io.Reader) error {
+	stackLength, err := serialize.UnPackCompactSize(reader)
+	if err != nil {
+		return err
+	}
+	for i := 0; i < int(stackLength); i++ {
+		u64, err := serialize.UnPackCompactSize(reader)
+		if err != nil {
+			return err
+		}
+		dataRead := make([]byte,u64)
+		_, err = reader.Read(dataRead[0:u64])
+		if err != nil {
+			return err
+		}
+		s.stack = append(s.stack, dataRead)
+	}
+	return nil
+}
+
+func (s ScriptWitness) GetScriptWitnessBytes() [][]byte {
+	return s.stack
+}
