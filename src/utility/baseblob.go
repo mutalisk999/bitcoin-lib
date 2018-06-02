@@ -75,3 +75,6 @@ func (b Baseblob) GetData() []byte {
 	return b.data
 }
 
+func (b Baseblob) GetDataSize() int {
+	return len(b.data)
+}
