@@ -21,17 +21,17 @@ func (s Script) Pack(writer io.Writer) error {
 	return nil
 }
 
-func (s* Script) UnPack(reader io.Reader) error {
+func (s *Script) UnPack(reader io.Reader) error {
 	u64, err := serialize.UnPackCompactSize(reader)
 	if err != nil {
 		return err
 	}
-	dataRead := make([]byte,u64)
+	dataRead := make([]byte, u64)
 	_, err = reader.Read(dataRead[0:u64])
 	if err != nil {
 		return err
 	}
-	for _, c:= range dataRead {
+	for _, c := range dataRead {
 		s.data = append(s.data, c)
 	}
 	return nil
@@ -40,7 +40,6 @@ func (s* Script) UnPack(reader io.Reader) error {
 func (s Script) GetScriptBytes() []byte {
 	return s.data
 }
-
 
 type ScriptWitness struct {
 	stack [][]byte
@@ -56,7 +55,7 @@ func (s ScriptWitness) Pack(writer io.Writer) error {
 		if err != nil {
 			return err
 		}
-		_, err = writer.Write(bytes[0:len(bytes)])
+		_, err = writer.Write(bytes[0:])
 		if err != nil {
 			return err
 		}
@@ -64,7 +63,7 @@ func (s ScriptWitness) Pack(writer io.Writer) error {
 	return nil
 }
 
-func (s* ScriptWitness) UnPack(reader io.Reader) error {
+func (s *ScriptWitness) UnPack(reader io.Reader) error {
 	stackLength, err := serialize.UnPackCompactSize(reader)
 	if err != nil {
 		return err
@@ -74,7 +73,7 @@ func (s* ScriptWitness) UnPack(reader io.Reader) error {
 		if err != nil {
 			return err
 		}
-		dataRead := make([]byte,u64)
+		dataRead := make([]byte, u64)
 		_, err = reader.Read(dataRead[0:u64])
 		if err != nil {
 			return err

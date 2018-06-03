@@ -2,8 +2,8 @@ package serialize
 
 import "io"
 import (
-	"utility"
 	"errors"
+	"utility"
 )
 
 func packU8(writer io.Writer, data8 uint8) error {
@@ -170,14 +170,14 @@ func PackFloat64(writer io.Writer, f64 float64) error {
 func PackCompactSize(writer io.Writer, ui64 uint64) error {
 	if ui64 < 253 {
 		return PackUint8(writer, uint8(ui64))
-	} else if ui64 <= (2 << 16 - 1) {
+	} else if ui64 <= (2<<16 - 1) {
 		err := PackUint8(writer, uint8(253))
 		if err == nil {
 			return PackUint16(writer, uint16(ui64))
 		} else {
 			return err
 		}
-	} else if ui64 <= (2 << 32 - 1) {
+	} else if ui64 <= (2<<32 - 1) {
 		err := PackUint8(writer, uint8(254))
 		if err == nil {
 			return PackUint32(writer, uint32(ui64))
@@ -286,4 +286,3 @@ func UnPackCompactSize(reader io.Reader) (uint64, error) {
 		}
 	}
 }
-

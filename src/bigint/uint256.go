@@ -1,9 +1,13 @@
 package bigint
 
-import "utility"
+import (
+	"blob"
+	"io"
+	"utility"
+)
 
 type Uint256 struct {
-	blob utility.Baseblob
+	blob blob.Baseblob
 }
 
 func (u Uint256) isValidHex(hexStr string) bool {
@@ -18,7 +22,7 @@ func (u Uint256) isValidHex(hexStr string) bool {
 	return true
 }
 
-func (u* Uint256) SetHex(hexStr string) {
+func (u *Uint256) SetHex(hexStr string) {
 	utility.Assert(u.isValidHex(hexStr), "invalid hex str")
 	u.blob.SetHex(hexStr)
 }
@@ -33,4 +37,21 @@ func (u Uint256) GetData() []byte {
 
 func (u Uint256) GetDataSize() int {
 	return u.blob.GetDataSize()
+}
+
+func (b Uint256) Pack(writer io.Writer) error {
+	err := b.blob.Pack(writer)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (b *Uint256) UnPack(reader io.Reader) error {
+	err := b.blob.UnPack(reader)
+	if err != nil {
+		return err
+	}
+	utility.Assert(b.blob.GetDataSize() == 32, "Uint256::UnPack: invalid size of Uint256")
+	return nil
 }

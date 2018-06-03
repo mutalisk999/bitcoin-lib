@@ -1,8 +1,8 @@
 package utility
 
 import (
-	"testing"
 	"fmt"
+	"testing"
 )
 
 func TestHexCharToNumber(t *testing.T) {
