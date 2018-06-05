@@ -112,3 +112,91 @@ func (t *TxOut) UnPack(reader io.Reader) error {
 	}
 	return nil
 }
+
+type Transaction struct {
+	Vin			[]TxIn
+	Vout		[]TxOut
+	Version 	int32
+	LockTime	uint32
+}
+
+func (t Transaction) HasWitness() bool {
+	for _, txin := range t.Vin {
+		if len(txin.ScriptWitness.GetScriptWitnessBytes()) != 0 {
+			return true
+		}
+	}
+	return false
+}
+
+func (t Transaction) Pack(writer io.Writer, witness bool) error {
+	t.Version = 2
+	err := serialize.PackInt32(writer, t.Version)
+	if err != nil {
+		return err
+	}
+	var flags uint8 = 0
+	if witness && t.HasWitness() {
+			flags = 1
+	}
+	if flags == 1 {
+		// pack vinDummy and flags
+		var vinDummy []TxIn
+		err = serialize.PackCompactSize(writer, uint64(len(vinDummy)))
+		if err != nil {
+			return err
+		}
+		err = serialize.PackUint8(writer, flags)
+		if err != nil {
+			return err
+		}
+	}
+	// pack Vin
+	err = serialize.PackCompactSize(writer, uint64(len(t.Vin)))
+	if err != nil {
+		return err
+	}
+	for _, vin := range t.Vin {
+		err = vin.Pack(writer)
+		if err != nil {
+			return err
+		}
+	}
+	// pack Vout
+	err = serialize.PackCompactSize(writer, uint64(len(t.Vout)))
+	if err != nil {
+		return err
+	}
+	for _, vout := range t.Vout {
+		err = vout.Pack(writer)
+		if err != nil {
+			return err
+		}
+	}
+	if flags == 1 {
+		// pack ScriptWitness
+		for _, vin := range t.Vin {
+			err = vin.ScriptWitness.Pack(writer)
+			if err != nil {
+				return err
+			}
+		}
+	}
+	err = serialize.PackUint32(writer, t.LockTime)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (t Transaction) PackToHex(witness bool) (error, string) {
+
+}
+
+func (t *Transaction) UnPack(reader io.Reader, witness bool) error {
+
+}
+
+func (t *Transaction) UnPackFromHex(hexStr string) (error) {
+
+}

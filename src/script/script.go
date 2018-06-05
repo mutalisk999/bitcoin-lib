@@ -21,6 +21,10 @@ func (s Script) Pack(writer io.Writer) error {
 	return nil
 }
 
+func (s Script) PackToHex() (error, string) {
+
+}
+
 func (s *Script) UnPack(reader io.Reader) error {
 	u64, err := serialize.UnPackCompactSize(reader)
 	if err != nil {
@@ -35,6 +39,10 @@ func (s *Script) UnPack(reader io.Reader) error {
 		s.data = append(s.data, c)
 	}
 	return nil
+}
+
+func (s *Script) UnPackFromHex(hexStr string) error {
+
 }
 
 func (s Script) GetScriptBytes() []byte {
@@ -63,6 +71,10 @@ func (s ScriptWitness) Pack(writer io.Writer) error {
 	return nil
 }
 
+func (s ScriptWitness) PackToHex() (error, string) {
+
+}
+
 func (s *ScriptWitness) UnPack(reader io.Reader) error {
 	stackLength, err := serialize.UnPackCompactSize(reader)
 	if err != nil {
@@ -81,6 +93,10 @@ func (s *ScriptWitness) UnPack(reader io.Reader) error {
 		s.stack = append(s.stack, dataRead)
 	}
 	return nil
+}
+
+func (s *ScriptWitness) UnPackFromHex(hexStr string) error {
+
 }
 
 func (s ScriptWitness) GetScriptWitnessBytes() [][]byte {

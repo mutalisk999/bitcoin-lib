@@ -39,19 +39,19 @@ func (u Uint256) GetDataSize() int {
 	return u.blob.GetDataSize()
 }
 
-func (b Uint256) Pack(writer io.Writer) error {
-	err := b.blob.Pack(writer)
+func (u Uint256) Pack(writer io.Writer) error {
+	err := u.blob.Pack(writer)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (b *Uint256) UnPack(reader io.Reader) error {
-	err := b.blob.UnPack(reader)
+func (u *Uint256) UnPack(reader io.Reader) error {
+	err := u.blob.UnPack(reader)
 	if err != nil {
 		return err
 	}
-	utility.Assert(b.blob.GetDataSize() == 32, "Uint256::UnPack: invalid size of Uint256")
+	utility.Assert(u.blob.GetDataSize() == 32, "Uint256::UnPack: invalid size of Uint256")
 	return nil
 }
