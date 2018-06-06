@@ -21,7 +21,7 @@ func (s Script) Pack(writer io.Writer) error {
 	return nil
 }
 
-func (s Script) PackToHex() (error, string) {
+func (s Script) PackToHex() (string, error) {
 
 }
 
@@ -71,7 +71,7 @@ func (s ScriptWitness) Pack(writer io.Writer) error {
 	return nil
 }
 
-func (s ScriptWitness) PackToHex() (error, string) {
+func (s ScriptWitness) PackToHex() (string, error) {
 
 }
 
