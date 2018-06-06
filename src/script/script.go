@@ -3,6 +3,8 @@ package script
 import (
 	"io"
 	"serialize"
+	"blob"
+	"bytes"
 )
 
 type Script struct {
@@ -22,7 +24,15 @@ func (s Script) Pack(writer io.Writer) error {
 }
 
 func (s Script) PackToHex() (string, error) {
-
+	bytesBuf := bytes.NewBuffer([]byte{})
+	bufWriter := io.Writer(bytesBuf)
+	err := s.Pack(bufWriter)
+	if err != nil {
+		return "", err
+	}
+	blob := new(blob.Byteblob)
+	blob.SetData(bytesBuf.Bytes())
+	return blob.GetHex(), nil
 }
 
 func (s *Script) UnPack(reader io.Reader) error {
@@ -42,7 +52,18 @@ func (s *Script) UnPack(reader io.Reader) error {
 }
 
 func (s *Script) UnPackFromHex(hexStr string) error {
-
+	blob := new(blob.Byteblob)
+	err := blob.SetHex(hexStr)
+	if err != nil {
+		return err
+	}
+	bytesBuf := bytes.NewBuffer(blob.GetData())
+	bufReader := io.Reader(bytesBuf)
+	err = s.UnPack(bufReader)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (s Script) GetScriptBytes() []byte {
@@ -72,7 +93,15 @@ func (s ScriptWitness) Pack(writer io.Writer) error {
 }
 
 func (s ScriptWitness) PackToHex() (string, error) {
-
+	bytesBuf := bytes.NewBuffer([]byte{})
+	bufWriter := io.Writer(bytesBuf)
+	err := s.Pack(bufWriter)
+	if err != nil {
+		return "", err
+	}
+	blob := new(blob.Byteblob)
+	blob.SetData(bytesBuf.Bytes())
+	return blob.GetHex(), nil
 }
 
 func (s *ScriptWitness) UnPack(reader io.Reader) error {
@@ -96,7 +125,18 @@ func (s *ScriptWitness) UnPack(reader io.Reader) error {
 }
 
 func (s *ScriptWitness) UnPackFromHex(hexStr string) error {
-
+	blob := new(blob.Byteblob)
+	err := blob.SetHex(hexStr)
+	if err != nil {
+		return err
+	}
+	bytesBuf := bytes.NewBuffer(blob.GetData())
+	bufReader := io.Reader(bytesBuf)
+	err = s.UnPack(bufReader)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (s ScriptWitness) GetScriptWitnessBytes() [][]byte {

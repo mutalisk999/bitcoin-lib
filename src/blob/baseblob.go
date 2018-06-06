@@ -3,9 +3,9 @@ package blob
 import (
 	"fmt"
 	"io"
-	"serialize"
 	"strings"
 	"utility"
+	"errors"
 )
 
 type Baseblob struct {
@@ -39,18 +39,24 @@ func (b Baseblob) isValidHex(hexStr string) bool {
 	return true
 }
 
-func (b *Baseblob) SetHex(hexStr string) {
+func (b *Baseblob) SetData(bytes []byte) {
+	b.data = bytes
+}
+
+func (b *Baseblob) SetHex(hexStr string) error {
 	if hexStr[0] == '0' && hexStr[1] == 'x' {
 		hexStr = hexStr[2:]
 	}
-
-	utility.Assert(b.isValidHex(hexStr), "invalid hex string")
+	if !b.isValidHex(hexStr) {
+		return errors.New("invalid hex string")
+	}
 	blobLength := len(hexStr) / 2
 	for i := blobLength - 1; i >= 0; i-- {
 		num1, _ := utility.HexCharToNumber(hexStr[2*i])
 		num2, _ := utility.HexCharToNumber(hexStr[2*i+1])
 		b.data = append(b.data, byte((num1<<4)|num2))
 	}
+	return nil
 }
 
 func (b Baseblob) GetHex() string {
@@ -70,25 +76,17 @@ func (b Baseblob) GetDataSize() int {
 	return len(b.data)
 }
 
-func (b Baseblob) Pack(writer io.Writer) error {
-	err := serialize.PackCompactSize(writer, uint64(len(b.data)))
-	if err != nil {
-		return err
-	}
-	_, err = writer.Write(b.data[0:len(b.data)])
+func (b Baseblob) Pack(writer io.Writer, packSize int) error {
+	_, err := writer.Write(b.data[0:packSize])
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (b *Baseblob) UnPack(reader io.Reader) error {
-	u64, err := serialize.UnPackCompactSize(reader)
-	if err != nil {
-		return err
-	}
-	dataRead := make([]byte, u64)
-	_, err = reader.Read(dataRead[0:u64])
+func (b *Baseblob) UnPack(reader io.Reader, unpackSize int) error {
+	dataRead := make([]byte, unpackSize)
+	_, err := reader.Read(dataRead[0:unpackSize])
 	if err != nil {
 		return err
 	}

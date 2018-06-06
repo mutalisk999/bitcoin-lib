@@ -6,6 +6,7 @@ import (
 	"serialize"
 	"strings"
 	"utility"
+	"errors"
 )
 
 type Byteblob struct {
@@ -31,18 +32,24 @@ func (b Byteblob) isValidHex(hexStr string) bool {
 	return true
 }
 
-func (b *Byteblob) SetHex(hexStr string) {
+func (b *Byteblob) SetData(bytes []byte) {
+	b.data = bytes
+}
+
+func (b *Byteblob) SetHex(hexStr string) error {
 	if hexStr[0] == '0' && hexStr[1] == 'x' {
 		hexStr = hexStr[2:]
 	}
-
-	utility.Assert(b.isValidHex(hexStr), "invalid hex string")
+	if !b.isValidHex(hexStr) {
+		return errors.New("invalid hex string")
+	}
 	blobLength := len(hexStr) / 2
 	for i := 0; i < blobLength; i++ {
 		num1, _ := utility.HexCharToNumber(hexStr[2*i])
 		num2, _ := utility.HexCharToNumber(hexStr[2*i+1])
 		b.data = append(b.data, byte((num1<<4)|num2))
 	}
+	return nil
 }
 
 func (b Byteblob) GetHex() string {

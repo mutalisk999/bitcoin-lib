@@ -4,6 +4,7 @@ import (
 	"blob"
 	"io"
 	"utility"
+	"errors"
 )
 
 type Uint256 struct {
@@ -22,9 +23,19 @@ func (u Uint256) isValidHex(hexStr string) bool {
 	return true
 }
 
-func (u *Uint256) SetHex(hexStr string) {
-	utility.Assert(u.isValidHex(hexStr), "invalid hex str")
-	u.blob.SetHex(hexStr)
+func (u *Uint256) SetHex(hexStr string) error {
+	if !u.isValidHex(hexStr) {
+		return errors.New("invalid hex str")
+	}
+	return u.blob.SetHex(hexStr)
+}
+
+func (u *Uint256) SetData(bytes []byte) error {
+	if len(bytes) != 32 {
+		return errors.New("invalid bytes")
+	}
+	u.blob.SetData(bytes)
+	return nil
 }
 
 func (u Uint256) GetHex() string {
@@ -40,7 +51,8 @@ func (u Uint256) GetDataSize() int {
 }
 
 func (u Uint256) Pack(writer io.Writer) error {
-	err := u.blob.Pack(writer)
+	utility.Assert(u.GetDataSize() == 32, "Uint256::Pack : invalid data size")
+	err := u.blob.Pack(writer, 32)
 	if err != nil {
 		return err
 	}
@@ -48,10 +60,12 @@ func (u Uint256) Pack(writer io.Writer) error {
 }
 
 func (u *Uint256) UnPack(reader io.Reader) error {
-	err := u.blob.UnPack(reader)
+	err := u.blob.UnPack(reader, 32)
 	if err != nil {
 		return err
 	}
-	utility.Assert(u.blob.GetDataSize() == 32, "Uint256::UnPack: invalid size of Uint256")
+	if u.blob.GetDataSize() != 32 {
+		return errors.New("Uint256::UnPack: invalid size of Uint256")
+	}
 	return nil
 }

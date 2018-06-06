@@ -5,6 +5,9 @@ import (
 	"io"
 	"script"
 	"serialize"
+	"errors"
+	"bytes"
+	"blob"
 )
 
 type OutPoint struct {
@@ -174,6 +177,10 @@ func (t Transaction) Pack(writer io.Writer, witness bool) error {
 		if err != nil {
 			return err
 		}
+		err = serialize.PackUint8(writer, flags)
+		if err != nil {
+			return err
+		}
 	}
 	// pack Vin
 	err = t.packVin(writer, t.Vin)
@@ -202,7 +209,15 @@ func (t Transaction) Pack(writer io.Writer, witness bool) error {
 }
 
 func (t Transaction) PackToHex(witness bool) (string, error) {
-
+	bytesBuf := bytes.NewBuffer([]byte{})
+	bufWriter := io.Writer(bytesBuf)
+	err := t.Pack(bufWriter, witness)
+	if err != nil {
+		return "", err
+	}
+	blob := new(blob.Byteblob)
+	blob.SetData(bytesBuf.Bytes())
+	return blob.GetHex(), nil
 }
 
 func (t *Transaction) unpackVin(reader io.Reader) ([]TxIn, error) {
@@ -281,8 +296,37 @@ func (t *Transaction) UnPack(reader io.Reader, witness bool) error {
 		}
 		t.Vout = vout
 	}
+	if ((flags & 1) == 1) && witness {
+		flags = flags ^ 1
+		// unpack ScriptWitness
+		for i:=0; i < len(t.Vin); i++ {
+			err = t.Vin[i].ScriptWitness.UnPack(reader)
+			if err != nil {
+				return err
+			}
+		}
+	}
+	if flags != 0 {
+		return errors.New("Transaction::Unpack: Unknown transaction option data")
+	}
+	t.LockTime, err = serialize.UnPackUint32(reader)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
-func (t *Transaction) UnPackFromHex(hexStr string) (error) {
-
+func (t *Transaction) UnPackFromHex(hexStr string, witness bool) (error) {
+	blob := new(blob.Byteblob)
+	err := blob.SetHex(hexStr)
+	if err != nil {
+		return err
+	}
+	bytesBuf := bytes.NewBuffer(blob.GetData())
+	bufReader := io.Reader(bytesBuf)
+	err = t.UnPack(bufReader, witness)
+	if err != nil {
+		return err
+	}
+	return nil
 }
