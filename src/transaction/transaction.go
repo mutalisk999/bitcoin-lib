@@ -59,10 +59,6 @@ func (t TxIn) Pack(writer io.Writer) error {
 	if err != nil {
 		return err
 	}
-	err = t.ScriptWitness.Pack(writer)
-	if err != nil {
-		return err
-	}
 	return nil
 }
 
@@ -76,10 +72,6 @@ func (t *TxIn) UnPack(reader io.Reader) error {
 		return err
 	}
 	t.Sequence, err = serialize.UnPackUint32(reader)
-	if err != nil {
-		return err
-	}
-	err = t.ScriptWitness.UnPack(reader)
 	if err != nil {
 		return err
 	}
@@ -215,9 +207,9 @@ func (t Transaction) PackToHex(witness bool) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	blob := new(blob.Byteblob)
-	blob.SetData(bytesBuf.Bytes())
-	return blob.GetHex(), nil
+	Blob := new(blob.Byteblob)
+	Blob.SetData(bytesBuf.Bytes())
+	return Blob.GetHex(), nil
 }
 
 func (t *Transaction) unpackVin(reader io.Reader) ([]TxIn, error) {
@@ -317,12 +309,12 @@ func (t *Transaction) UnPack(reader io.Reader, witness bool) error {
 }
 
 func (t *Transaction) UnPackFromHex(hexStr string, witness bool) (error) {
-	blob := new(blob.Byteblob)
-	err := blob.SetHex(hexStr)
+	Blob := new(blob.Byteblob)
+	err := Blob.SetHex(hexStr)
 	if err != nil {
 		return err
 	}
-	bytesBuf := bytes.NewBuffer(blob.GetData())
+	bytesBuf := bytes.NewBuffer(Blob.GetData())
 	bufReader := io.Reader(bytesBuf)
 	err = t.UnPack(bufReader, witness)
 	if err != nil {
