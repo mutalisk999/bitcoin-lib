@@ -2,11 +2,11 @@ package block
 
 import (
 	"bigint"
-	"transaction"
+	"blob"
+	"bytes"
 	"io"
 	"serialize"
-	"bytes"
-	"blob"
+	"transaction"
 )
 
 type BlockHeader struct {
@@ -123,7 +123,7 @@ func (b *Block) UnPack(reader io.Reader) error {
 	if err != nil {
 		return err
 	}
-	for i:=0; i<int(txCount); i++ {
+	for i := 0; i < int(txCount); i++ {
 		var tx transaction.Transaction
 		err = tx.UnPack(reader)
 		if err != nil {

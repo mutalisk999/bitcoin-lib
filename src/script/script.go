@@ -1,10 +1,10 @@
 package script
 
 import (
-	"io"
-	"serialize"
 	"blob"
 	"bytes"
+	"io"
+	"serialize"
 )
 
 type Script struct {
@@ -30,9 +30,9 @@ func (s Script) PackToHex() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	blob := new(blob.Byteblob)
-	blob.SetData(bytesBuf.Bytes())
-	return blob.GetHex(), nil
+	Blob := new(blob.Byteblob)
+	Blob.SetData(bytesBuf.Bytes())
+	return Blob.GetHex(), nil
 }
 
 func (s *Script) UnPack(reader io.Reader) error {
@@ -52,12 +52,12 @@ func (s *Script) UnPack(reader io.Reader) error {
 }
 
 func (s *Script) UnPackFromHex(hexStr string) error {
-	blob := new(blob.Byteblob)
-	err := blob.SetHex(hexStr)
+	Blob := new(blob.Byteblob)
+	err := Blob.SetHex(hexStr)
 	if err != nil {
 		return err
 	}
-	bytesBuf := bytes.NewBuffer(blob.GetData())
+	bytesBuf := bytes.NewBuffer(Blob.GetData())
 	bufReader := io.Reader(bytesBuf)
 	err = s.UnPack(bufReader)
 	if err != nil {
@@ -79,12 +79,12 @@ func (s ScriptWitness) Pack(writer io.Writer) error {
 	if err != nil {
 		return err
 	}
-	for _, bytes := range s.stack {
-		err := serialize.PackCompactSize(writer, uint64(len(bytes)))
+	for _, bytesSigWit := range s.stack {
+		err := serialize.PackCompactSize(writer, uint64(len(bytesSigWit)))
 		if err != nil {
 			return err
 		}
-		_, err = writer.Write(bytes[0:])
+		_, err = writer.Write(bytesSigWit[0:])
 		if err != nil {
 			return err
 		}
@@ -99,9 +99,9 @@ func (s ScriptWitness) PackToHex() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	blob := new(blob.Byteblob)
-	blob.SetData(bytesBuf.Bytes())
-	return blob.GetHex(), nil
+	Blob := new(blob.Byteblob)
+	Blob.SetData(bytesBuf.Bytes())
+	return Blob.GetHex(), nil
 }
 
 func (s *ScriptWitness) UnPack(reader io.Reader) error {
@@ -125,12 +125,12 @@ func (s *ScriptWitness) UnPack(reader io.Reader) error {
 }
 
 func (s *ScriptWitness) UnPackFromHex(hexStr string) error {
-	blob := new(blob.Byteblob)
-	err := blob.SetHex(hexStr)
+	Blob := new(blob.Byteblob)
+	err := Blob.SetHex(hexStr)
 	if err != nil {
 		return err
 	}
-	bytesBuf := bytes.NewBuffer(blob.GetData())
+	bytesBuf := bytes.NewBuffer(Blob.GetData())
 	bufReader := io.Reader(bytesBuf)
 	err = s.UnPack(bufReader)
 	if err != nil {

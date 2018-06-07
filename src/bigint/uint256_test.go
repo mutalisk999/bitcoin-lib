@@ -29,7 +29,7 @@ func TestUint256(t *testing.T) {
 func TestUint256_2(t *testing.T) {
 	uint256 := new(Uint256)
 	uint256.SetData([]byte{111, 63, 110, 39, 36, 82, 255, 143, 50, 75, 237, 194, 221, 28, 237,
-	241, 230, 47, 115, 228, 108, 70, 236, 4, 0, 0, 0, 0, 0, 0, 0, 0})
+		241, 230, 47, 115, 228, 108, 70, 236, 4, 0, 0, 0, 0, 0, 0, 0, 0})
 	fmt.Println(uint256.GetData())
 	fmt.Println(uint256.GetHex())
 	fmt.Println(uint256.GetDataSize())

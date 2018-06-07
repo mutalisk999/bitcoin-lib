@@ -2,12 +2,12 @@ package transaction
 
 import (
 	"bigint"
+	"blob"
+	"bytes"
+	"errors"
 	"io"
 	"script"
 	"serialize"
-	"errors"
-	"bytes"
-	"blob"
 )
 
 type OutPoint struct {
@@ -109,10 +109,10 @@ func (t *TxOut) UnPack(reader io.Reader) error {
 }
 
 type Transaction struct {
-	Vin			[]TxIn
-	Vout		[]TxOut
-	Version 	int32
-	LockTime	uint32
+	Vin      []TxIn
+	Vout     []TxOut
+	Version  int32
+	LockTime uint32
 }
 
 func (t Transaction) HasWitness() bool {
@@ -217,11 +217,11 @@ func (t *Transaction) unpackVin(reader io.Reader) ([]TxIn, error) {
 	if err != nil {
 		return nil, err
 	}
-	for i:= 0; i < int(ui64); i++ {
+	for i := 0; i < int(ui64); i++ {
 		var v TxIn
 		err = v.UnPack(reader)
 		if err != nil {
-			return nil,err
+			return nil, err
 		}
 		vin = append(vin, v)
 	}
@@ -234,11 +234,11 @@ func (t *Transaction) unpackVout(reader io.Reader) ([]TxOut, error) {
 	if err != nil {
 		return nil, err
 	}
-	for i:= 0; i < int(ui64); i++ {
+	for i := 0; i < int(ui64); i++ {
 		var v TxOut
 		err = v.UnPack(reader)
 		if err != nil {
-			return nil,err
+			return nil, err
 		}
 		vout = append(vout, v)
 	}
@@ -260,7 +260,7 @@ func (t *Transaction) UnPack(reader io.Reader) error {
 		return err
 	}
 	t.Vin = vin
-	if len(vin) == 0 {   // witness
+	if len(vin) == 0 { // witness
 		flags, err = serialize.UnPackUint8(reader)
 		if err != nil {
 			return err
@@ -279,7 +279,7 @@ func (t *Transaction) UnPack(reader io.Reader) error {
 			}
 			t.Vout = vout
 		}
-	} else {   // not witness
+	} else { // not witness
 		// unpack Vout
 		vout, err = t.unpackVout(reader)
 		if err != nil {
@@ -290,7 +290,7 @@ func (t *Transaction) UnPack(reader io.Reader) error {
 	if (flags & 1) == 1 {
 		flags = flags ^ 1
 		// unpack ScriptWitness
-		for i:=0; i < len(t.Vin); i++ {
+		for i := 0; i < len(t.Vin); i++ {
 			err = t.Vin[i].ScriptWitness.UnPack(reader)
 			if err != nil {
 				return err
@@ -307,7 +307,7 @@ func (t *Transaction) UnPack(reader io.Reader) error {
 	return nil
 }
 
-func (t *Transaction) UnPackFromHex(hexStr string) (error) {
+func (t *Transaction) UnPackFromHex(hexStr string) error {
 	Blob := new(blob.Byteblob)
 	err := Blob.SetHex(hexStr)
 	if err != nil {

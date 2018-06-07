@@ -29,7 +29,7 @@ func TestUint160(t *testing.T) {
 func TestUint160_2(t *testing.T) {
 	uint160 := new(Uint160)
 	uint160.SetData([]byte{151, 151, 229, 218, 36, 55, 174, 142, 84, 24, 236, 232,
-	88, 109, 169, 245, 189, 162, 8, 102})
+		88, 109, 169, 245, 189, 162, 8, 102})
 	fmt.Println(uint160.GetData())
 	fmt.Println(uint160.GetHex())
 	fmt.Println(uint160.GetDataSize())
@@ -45,4 +45,3 @@ func TestUint160_2(t *testing.T) {
 	uint160.UnPack(bufReader)
 	fmt.Println("uint160 data:", uint160.GetData())
 }
-

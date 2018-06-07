@@ -29,7 +29,7 @@ func TestByteblob(t *testing.T) {
 func TestByteblob_2(t *testing.T) {
 	blob := new(Byteblob)
 	blob.SetData([]byte{0, 0, 0, 0, 0, 0, 0, 0, 4, 236, 70, 108, 228, 115, 47, 230, 241, 237, 28,
-	221, 194, 237, 75, 50, 143, 255, 82, 36, 39, 110, 63, 111})
+		221, 194, 237, 75, 50, 143, 255, 82, 36, 39, 110, 63, 111})
 	fmt.Println(blob.GetData())
 	fmt.Println(blob.GetHex())
 	fmt.Println(blob.GetDataSize())

@@ -1,11 +1,11 @@
 package transaction
 
 import (
-	"testing"
-	"fmt"
 	"blob"
 	"bytes"
+	"fmt"
 	"io"
+	"testing"
 )
 
 func TestTransaction(t *testing.T) {
@@ -20,14 +20,14 @@ func TestTransaction(t *testing.T) {
 	fmt.Println("trx version:", trx.Version)
 	fmt.Println("trx locktime", trx.LockTime)
 	fmt.Println("trx vin size:", len(trx.Vin))
-	for i:=0; i<len(trx.Vin); i++ {
+	for i := 0; i < len(trx.Vin); i++ {
 		fmt.Println("vin prevout:", trx.Vin[i].PrevOut)
 		fmt.Println("vin scriptsig:", trx.Vin[i].ScriptSig)
 		fmt.Println("vin sequence:", trx.Vin[i].Sequence)
 		fmt.Println("vin scriptwitness:", trx.Vin[i].ScriptWitness)
 	}
 	fmt.Println("trx vout size:", len(trx.Vout))
-	for i:=0; i<len(trx.Vout); i++ {
+	for i := 0; i < len(trx.Vout); i++ {
 		fmt.Println("vout value", trx.Vout[i].Value)
 		fmt.Println("vout scriptpubkey:", trx.Vout[i].ScriptPubKey)
 	}
@@ -43,14 +43,14 @@ func TestTransactionHex(t *testing.T) {
 	fmt.Println("trx version:", trx.Version)
 	fmt.Println("trx locktime", trx.LockTime)
 	fmt.Println("trx vin size:", len(trx.Vin))
-	for i:=0; i<len(trx.Vin); i++ {
+	for i := 0; i < len(trx.Vin); i++ {
 		fmt.Println("vin prevout:", trx.Vin[i].PrevOut)
 		fmt.Println("vin scriptsig:", trx.Vin[i].ScriptSig)
 		fmt.Println("vin sequence:", trx.Vin[i].Sequence)
 		fmt.Println("vin scriptwitness:", trx.Vin[i].ScriptWitness)
 	}
 	fmt.Println("trx vout size:", len(trx.Vout))
-	for i:=0; i<len(trx.Vout); i++ {
+	for i := 0; i < len(trx.Vout); i++ {
 		fmt.Println("vout value", trx.Vout[i].Value)
 		fmt.Println("vout scriptpubkey:", trx.Vout[i].ScriptPubKey)
 	}
@@ -70,14 +70,14 @@ func TestWitnessTransaction(t *testing.T) {
 	fmt.Println("trx version:", trx.Version)
 	fmt.Println("trx locktime", trx.LockTime)
 	fmt.Println("trx vin size:", len(trx.Vin))
-	for i:=0; i<len(trx.Vin); i++ {
+	for i := 0; i < len(trx.Vin); i++ {
 		fmt.Println("vin prevout:", trx.Vin[i].PrevOut)
 		fmt.Println("vin scriptsig:", trx.Vin[i].ScriptSig)
 		fmt.Println("vin sequence:", trx.Vin[i].Sequence)
 		fmt.Println("vin scriptwitness:", trx.Vin[i].ScriptWitness)
 	}
 	fmt.Println("trx vout size:", len(trx.Vout))
-	for i:=0; i<len(trx.Vout); i++ {
+	for i := 0; i < len(trx.Vout); i++ {
 		fmt.Println("vout value", trx.Vout[i].Value)
 		fmt.Println("vout scriptpubkey:", trx.Vout[i].ScriptPubKey)
 	}
@@ -93,14 +93,14 @@ func TestWitnessTransactionHex(t *testing.T) {
 	fmt.Println("trx version:", trx.Version)
 	fmt.Println("trx locktime", trx.LockTime)
 	fmt.Println("trx vin size:", len(trx.Vin))
-	for i:=0; i<len(trx.Vin); i++ {
+	for i := 0; i < len(trx.Vin); i++ {
 		fmt.Println("vin prevout:", trx.Vin[i].PrevOut)
 		fmt.Println("vin scriptsig:", trx.Vin[i].ScriptSig)
 		fmt.Println("vin sequence:", trx.Vin[i].Sequence)
 		fmt.Println("vin scriptwitness:", trx.Vin[i].ScriptWitness)
 	}
 	fmt.Println("trx vout size:", len(trx.Vout))
-	for i:=0; i<len(trx.Vout); i++ {
+	for i := 0; i < len(trx.Vout); i++ {
 		fmt.Println("vout value", trx.Vout[i].Value)
 		fmt.Println("vout scriptpubkey:", trx.Vout[i].ScriptPubKey)
 	}

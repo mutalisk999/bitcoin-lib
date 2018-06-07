@@ -2,9 +2,9 @@ package bigint
 
 import (
 	"blob"
+	"errors"
 	"io"
 	"utility"
-	"errors"
 )
 
 type Uint256 struct {

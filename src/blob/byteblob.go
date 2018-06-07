@@ -1,11 +1,11 @@
 package blob
 
 import (
+	"errors"
 	"io"
 	"serialize"
 	"strings"
 	"utility"
-	"errors"
 )
 
 type Byteblob struct {
@@ -52,15 +52,15 @@ func (b *Byteblob) SetHex(hexStr string) error {
 }
 
 func (b Byteblob) GetHex() string {
-	var stringRet string
+	var bytes []byte
 	for _, c := range b.data {
 		var h4b byte
 		var l4b byte
 		h4b, _ = utility.NumberToHexChar((c & 0xf0) >> 4)
 		l4b, _ = utility.NumberToHexChar(c & 0x0f)
-		stringRet += string([]byte{h4b,l4b})
+		bytes = append(bytes, h4b, l4b)
 	}
-	return stringRet
+	return string(bytes)
 }
 
 func (b Byteblob) GetData() []byte {

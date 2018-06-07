@@ -1,11 +1,11 @@
 package blob
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"strings"
 	"utility"
-	"errors"
 )
 
 type Baseblob struct {
