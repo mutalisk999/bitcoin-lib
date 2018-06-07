@@ -1,7 +1,6 @@
 package blob
 
 import (
-	"fmt"
 	"io"
 	"serialize"
 	"strings"
@@ -55,7 +54,11 @@ func (b *Byteblob) SetHex(hexStr string) error {
 func (b Byteblob) GetHex() string {
 	var stringRet string
 	for _, c := range b.data {
-		stringRet += fmt.Sprintf("%02x", c)
+		var h4b byte
+		var l4b byte
+		h4b, _ = utility.NumberToHexChar((c & 0xf0) >> 4)
+		l4b, _ = utility.NumberToHexChar(c & 0x0f)
+		stringRet += string([]byte{h4b,l4b})
 	}
 	return stringRet
 }

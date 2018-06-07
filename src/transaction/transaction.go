@@ -152,15 +152,14 @@ func (t Transaction) packVout(writer io.Writer, vout []TxOut) error {
 	return nil
 }
 
-func (t Transaction) Pack(writer io.Writer, witness bool) error {
-	t.Version = 2
+func (t Transaction) Pack(writer io.Writer) error {
 	err := serialize.PackInt32(writer, t.Version)
 	if err != nil {
 		return err
 	}
 	var flags uint8 = 0
-	if witness && t.HasWitness() {
-			flags = 1
+	if t.HasWitness() {
+		flags = 1
 	}
 	if flags == 1 {
 		// pack vinDummy and flags
@@ -200,10 +199,10 @@ func (t Transaction) Pack(writer io.Writer, witness bool) error {
 	return nil
 }
 
-func (t Transaction) PackToHex(witness bool) (string, error) {
+func (t Transaction) PackToHex() (string, error) {
 	bytesBuf := bytes.NewBuffer([]byte{})
 	bufWriter := io.Writer(bytesBuf)
-	err := t.Pack(bufWriter, witness)
+	err := t.Pack(bufWriter)
 	if err != nil {
 		return "", err
 	}
@@ -246,7 +245,7 @@ func (t *Transaction) unpackVout(reader io.Reader) ([]TxOut, error) {
 	return vout, nil
 }
 
-func (t *Transaction) UnPack(reader io.Reader, witness bool) error {
+func (t *Transaction) UnPack(reader io.Reader) error {
 	var err error
 	var flags uint8 = 0
 	var vin []TxIn
@@ -261,7 +260,7 @@ func (t *Transaction) UnPack(reader io.Reader, witness bool) error {
 		return err
 	}
 	t.Vin = vin
-	if len(vin) == 0 && witness {   // witness
+	if len(vin) == 0 {   // witness
 		flags, err = serialize.UnPackUint8(reader)
 		if err != nil {
 			return err
@@ -288,7 +287,7 @@ func (t *Transaction) UnPack(reader io.Reader, witness bool) error {
 		}
 		t.Vout = vout
 	}
-	if ((flags & 1) == 1) && witness {
+	if (flags & 1) == 1 {
 		flags = flags ^ 1
 		// unpack ScriptWitness
 		for i:=0; i < len(t.Vin); i++ {
@@ -308,7 +307,7 @@ func (t *Transaction) UnPack(reader io.Reader, witness bool) error {
 	return nil
 }
 
-func (t *Transaction) UnPackFromHex(hexStr string, witness bool) (error) {
+func (t *Transaction) UnPackFromHex(hexStr string) (error) {
 	Blob := new(blob.Byteblob)
 	err := Blob.SetHex(hexStr)
 	if err != nil {
@@ -316,7 +315,7 @@ func (t *Transaction) UnPackFromHex(hexStr string, witness bool) (error) {
 	}
 	bytesBuf := bytes.NewBuffer(Blob.GetData())
 	bufReader := io.Reader(bytesBuf)
-	err = t.UnPack(bufReader, witness)
+	err = t.UnPack(bufReader)
 	if err != nil {
 		return err
 	}

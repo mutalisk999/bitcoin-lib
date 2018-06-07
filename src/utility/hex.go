@@ -12,3 +12,12 @@ func HexCharToNumber(charIn byte) (int8, error) {
 	}
 	return 0, errors.New("invalid hex char")
 }
+
+func NumberToHexChar(number uint8) (byte, error) {
+	if number <= 9 {
+		return byte(number+0x30), nil
+	} else if number >= 10 && number <= 15 {
+		return byte(number+0x57), nil
+	}
+	return 0, errors.New("invalid number")
+}
