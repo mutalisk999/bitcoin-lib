@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"io"
 	"serialize"
+	"utility"
 )
 
 type Script struct {
@@ -68,6 +69,41 @@ func (s *Script) UnPackFromHex(hexStr string) error {
 
 func (s Script) GetScriptBytes() []byte {
 	return s.data
+}
+
+func (s *Script) SetScriptBytes(scriptBytes []byte) {
+	s.data = scriptBytes
+}
+
+func DecodeOP_N(opCode int) int {
+	if opCode == OP_0 {
+		return 0
+	}
+	utility.Assert(opCode >= OP_1 && opCode <= OP_16, "invalid opCode")
+	return opCode - (OP_1 - 1)
+}
+
+func (s Script) IsPayToScriptHash() bool {
+	return len(s.data) == 23 && s.data[0] == OP_HASH160 && s.data[1] == 0x14 && s.data[22] == OP_EQUAL
+}
+
+func (s Script) IsPayToWitnessScriptHash() bool {
+	return len(s.data) == 34 && s.data[0] == OP_0 && s.data[1] == 0x20
+}
+
+func (s Script) IsWitnessProgram() (bool, int, []byte) {
+	if len(s.data) < 4 || len(s.data) > 42 {
+		return false, 0, []byte{}
+	}
+	if s.data[0] != OP_0 && (s.data[0] < OP_1 || s.data[0] > OP_16) {
+		return false, 0, []byte{}
+	}
+	if int(s.data[1]+2) == len(s.data) {
+		version := DecodeOP_N(int(s.data[0]))
+		program := s.data[2:]
+		return true, version, program
+	}
+	return false, 0, []byte{}
 }
 
 type ScriptWitness struct {
@@ -141,4 +177,8 @@ func (s *ScriptWitness) UnPackFromHex(hexStr string) error {
 
 func (s ScriptWitness) GetScriptWitnessBytes() [][]byte {
 	return s.stack
+}
+
+func (s *ScriptWitness) SetScriptWitnessBytes(witnessBytes [][]byte) {
+	s.stack = witnessBytes
 }

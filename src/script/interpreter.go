@@ -1,0 +1,6 @@
+package script
+
+const (
+	WITNESS_V0_SCRIPTHASH_SIZE = 32
+	WITNESS_V0_KEYHASH_SIZE    = 20
+)
