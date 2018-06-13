@@ -33,11 +33,11 @@ func Solver(scriptPubKey Script) (bool, int, [][]byte) {
 	// p2pk
 	if len(scriptPubKey.GetScriptBytes()) >= 1 &&
 		(scriptPubKey.GetScriptBytes()[0] == pubkey.PUBLIC_KEY_SIZE || scriptPubKey.GetScriptBytes()[0] == pubkey.COMPRESSED_PUBLIC_KEY_SIZE) {
-		pubkeyBytes := scriptPubKey.GetScriptBytes()[1:]
-		pubkey := new(pubkey.PubKey)
-		err := pubkey.SetPubKeyData(pubkeyBytes)
+		pubKeyBytes := scriptPubKey.GetScriptBytes()[1:]
+		newPubKey := new(pubkey.PubKey)
+		err := newPubKey.SetPubKeyData(pubKeyBytes)
 		if err == nil {
-			return true, TX_PUBKEY, [][]byte{pubkeyBytes}
+			return true, TX_PUBKEY, [][]byte{pubKeyBytes}
 		} else {
 			return false, TX_NONSTANDARD, [][]byte{}
 		}
