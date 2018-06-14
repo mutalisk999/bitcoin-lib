@@ -58,7 +58,7 @@ func Solver(scriptPubKey Script) (bool, int, [][]byte) {
 
 	// op_return
 	// and not to judge if the script only contains PUSHDATA opcode and something else related
-	if len(scriptPubKey.GetScriptBytes()) >= 1 && scriptPubKey.GetScriptBytes()[0] == OP_RETURN {
+	if scriptPubKey.GetScriptLength() >= 1 && scriptPubKey.GetScriptBytes()[0] == OP_RETURN {
 		return true, TX_NULL_DATA, [][]byte{}
 	}
 
@@ -69,7 +69,7 @@ func Solver(scriptPubKey Script) (bool, int, [][]byte) {
 
 	// p2pk
 	if scriptPubKey.IsPayToPubKey() {
-		pubKeyBytes := scriptPubKey.GetScriptBytes()[1:]
+		pubKeyBytes := scriptPubKey.GetScriptBytes()[1 : scriptPubKey.GetScriptLength()-1]
 		newPubKey := new(pubkey.PubKey)
 		err := newPubKey.SetPubKeyData(pubKeyBytes)
 		if err == nil {
@@ -82,8 +82,8 @@ func Solver(scriptPubKey Script) (bool, int, [][]byte) {
 	// multisig
 	if scriptPubKey.IsMultiSig() {
 		_ = DecodeOPN(scriptPubKey.GetScriptBytes()[0])
-		m := DecodeOPN(scriptPubKey.GetScriptBytes()[len(scriptPubKey.GetScriptBytes())-2])
-		pubKeysBytes := scriptPubKey.GetScriptBytes()[1 : len(scriptPubKey.GetScriptBytes())-2]
+		m := DecodeOPN(scriptPubKey.GetScriptBytes()[scriptPubKey.GetScriptLength()-2])
+		pubKeysBytes := scriptPubKey.GetScriptBytes()[1 : scriptPubKey.GetScriptLength()-2]
 		err, pubKeys := loadPubKeys(pubKeysBytes)
 		if err != nil {
 			return false, TX_NONSTANDARD, [][]byte{}

@@ -72,6 +72,10 @@ func (s Script) GetScriptBytes() []byte {
 	return s.data
 }
 
+func (s Script) GetScriptLength() int {
+	return len(s.data)
+}
+
 func (s *Script) SetScriptBytes(scriptBytes []byte) {
 	s.data = scriptBytes
 }
@@ -89,12 +93,13 @@ func (s Script) IsPayToScriptHash() bool {
 }
 
 func (s Script) IsPayToPubKey() bool {
-	return (len(s.GetScriptBytes()) == (1+pubkey.PUBLIC_KEY_SIZE) && s.GetScriptBytes()[0] == pubkey.PUBLIC_KEY_SIZE) ||
-		(len(s.GetScriptBytes()) == (1+pubkey.COMPRESSED_PUBLIC_KEY_SIZE) && s.GetScriptBytes()[0] == pubkey.COMPRESSED_PUBLIC_KEY_SIZE)
+	return ((s.GetScriptLength() == (1+1+pubkey.PUBLIC_KEY_SIZE) && s.GetScriptBytes()[0] == pubkey.PUBLIC_KEY_SIZE) ||
+		(s.GetScriptLength() == (1+1+pubkey.COMPRESSED_PUBLIC_KEY_SIZE) && s.GetScriptBytes()[0] == pubkey.COMPRESSED_PUBLIC_KEY_SIZE)) &&
+		s.GetScriptBytes()[s.GetScriptLength()-1] == OP_CHECKSIG
 }
 
 func (s Script) IsPayToPubKeyHash() bool {
-	return len(s.GetScriptBytes()) == 25 && s.GetScriptBytes()[0] == OP_DUP && s.GetScriptBytes()[1] == OP_HASH160 &&
+	return s.GetScriptLength() == 25 && s.GetScriptBytes()[0] == OP_DUP && s.GetScriptBytes()[1] == OP_HASH160 &&
 		s.GetScriptBytes()[2] == 0x14 && s.GetScriptBytes()[23] == OP_EQUALVERIFY && s.GetScriptBytes()[24] == OP_CHECKSIG
 }
 
@@ -105,7 +110,7 @@ func (s Script) IsMultiSig() bool {
 
 	// op_smallinteger
 	opSmallInt1 := s.GetScriptBytes()[0]
-	opSmallInt2 := s.GetScriptBytes()[len(s.GetScriptBytes())-2]
+	opSmallInt2 := s.GetScriptBytes()[s.GetScriptLength()-2]
 	if opSmallInt1 != OP_0 && (opSmallInt1 < OP_1 || opSmallInt1 > OP_16) {
 		return false
 	}
