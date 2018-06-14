@@ -4,31 +4,11 @@ import (
 	"errors"
 	"io"
 	"serialize"
-	"strings"
 	"utility"
 )
 
 type Byteblob struct {
 	data []byte
-}
-
-func (b Byteblob) isValidHex(hexStr string) bool {
-	if hexStr[0] == '0' && hexStr[1] == 'x' {
-		hexStr = hexStr[2:]
-	}
-
-	if len(hexStr)%2 == 1 {
-		return false
-	}
-
-	hexStr = strings.ToLower(hexStr)
-	for _, c := range []byte(hexStr) {
-		if !((c >= 0x30 && c <= 0x39) || (c >= 0x61 && c <= 0x66)) {
-			return false
-		}
-	}
-
-	return true
 }
 
 func (b *Byteblob) SetData(bytes []byte) {
@@ -39,7 +19,7 @@ func (b *Byteblob) SetHex(hexStr string) error {
 	if hexStr[0] == '0' && hexStr[1] == 'x' {
 		hexStr = hexStr[2:]
 	}
-	if !b.isValidHex(hexStr) {
+	if !utility.IsValidHex(hexStr) {
 		return errors.New("invalid hex string")
 	}
 	blobLength := len(hexStr) / 2

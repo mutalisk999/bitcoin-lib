@@ -22,16 +22,16 @@ func GetLen(c byte) int {
 	return 0
 }
 
-func ValidSize(pubkeyData []byte) bool {
-	return len(pubkeyData) > 0 && GetLen(pubkeyData[0]) == len(pubkeyData)
+func ValidSize(pubKeyData []byte) bool {
+	return len(pubKeyData) > 0 && GetLen(pubKeyData[0]) == len(pubKeyData)
 }
 
-func (p *PubKey) SetPubKeyData(pubkeyBytes []byte) error {
-	isValid := ValidSize(pubkeyBytes)
+func (p *PubKey) SetPubKeyData(pubKeyBytes []byte) error {
+	isValid := ValidSize(pubKeyBytes)
 	if !isValid {
 		return errors.New("PubKey::SetPubKeyData : invalid pubkey size")
 	}
-	p.data = pubkeyBytes
+	p.data = pubKeyBytes
 	return nil
 }
 

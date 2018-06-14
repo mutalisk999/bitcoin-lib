@@ -2,9 +2,7 @@ package blob
 
 import (
 	"errors"
-	"fmt"
 	"io"
-	"strings"
 	"utility"
 )
 
@@ -20,25 +18,6 @@ func DataReverse(dataIn []byte) []byte {
 	return dataRet
 }
 
-func (b Baseblob) isValidHex(hexStr string) bool {
-	if hexStr[0] == '0' && hexStr[1] == 'x' {
-		hexStr = hexStr[2:]
-	}
-
-	if len(hexStr)%2 == 1 {
-		return false
-	}
-
-	hexStr = strings.ToLower(hexStr)
-	for _, c := range []byte(hexStr) {
-		if !((c >= 0x30 && c <= 0x39) || (c >= 0x61 && c <= 0x66)) {
-			return false
-		}
-	}
-
-	return true
-}
-
 func (b *Baseblob) SetData(bytes []byte) {
 	b.data = bytes
 }
@@ -47,7 +26,7 @@ func (b *Baseblob) SetHex(hexStr string) error {
 	if hexStr[0] == '0' && hexStr[1] == 'x' {
 		hexStr = hexStr[2:]
 	}
-	if !b.isValidHex(hexStr) {
+	if !utility.IsValidHex(hexStr) {
 		return errors.New("invalid hex string")
 	}
 	blobLength := len(hexStr) / 2
@@ -60,12 +39,16 @@ func (b *Baseblob) SetHex(hexStr string) error {
 }
 
 func (b Baseblob) GetHex() string {
-	var stringRet string
+	var bytes []byte
 	dataRet := DataReverse(b.data)
 	for _, c := range dataRet {
-		stringRet += fmt.Sprintf("%02x", c)
+		var h4b byte
+		var l4b byte
+		h4b, _ = utility.NumberToHexChar((c & 0xf0) >> 4)
+		l4b, _ = utility.NumberToHexChar(c & 0x0f)
+		bytes = append(bytes, h4b, l4b)
 	}
-	return stringRet
+	return string(bytes)
 }
 
 func (b Baseblob) GetData() []byte {

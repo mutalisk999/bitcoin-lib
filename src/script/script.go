@@ -4,6 +4,7 @@ import (
 	"blob"
 	"bytes"
 	"io"
+	"pubkey"
 	"serialize"
 	"utility"
 )
@@ -75,16 +76,48 @@ func (s *Script) SetScriptBytes(scriptBytes []byte) {
 	s.data = scriptBytes
 }
 
-func DecodeOP_N(opCode int) int {
+func DecodeOPN(opCode byte) int {
 	if opCode == OP_0 {
 		return 0
 	}
 	utility.Assert(opCode >= OP_1 && opCode <= OP_16, "invalid opCode")
-	return opCode - (OP_1 - 1)
+	return int(opCode - (OP_1 - 1))
 }
 
 func (s Script) IsPayToScriptHash() bool {
 	return len(s.data) == 23 && s.data[0] == OP_HASH160 && s.data[1] == 0x14 && s.data[22] == OP_EQUAL
+}
+
+func (s Script) IsPayToPubKey() bool {
+	return (len(s.GetScriptBytes()) == (1+pubkey.PUBLIC_KEY_SIZE) && s.GetScriptBytes()[0] == pubkey.PUBLIC_KEY_SIZE) ||
+		(len(s.GetScriptBytes()) == (1+pubkey.COMPRESSED_PUBLIC_KEY_SIZE) && s.GetScriptBytes()[0] == pubkey.COMPRESSED_PUBLIC_KEY_SIZE)
+}
+
+func (s Script) IsPayToPubKeyHash() bool {
+	return len(s.GetScriptBytes()) == 25 && s.GetScriptBytes()[0] == OP_DUP && s.GetScriptBytes()[1] == OP_HASH160 &&
+		s.GetScriptBytes()[2] == 0x14 && s.GetScriptBytes()[23] == OP_EQUALVERIFY && s.GetScriptBytes()[24] == OP_CHECKSIG
+}
+
+func (s Script) IsMultiSig() bool {
+	if len(s.GetScriptBytes()) < 3+1+pubkey.COMPRESSED_PUBLIC_KEY_SIZE {
+		return false
+	}
+
+	// op_smallinteger
+	opSmallInt1 := s.GetScriptBytes()[0]
+	opSmallInt2 := s.GetScriptBytes()[len(s.GetScriptBytes())-2]
+	if opSmallInt1 != OP_0 && (opSmallInt1 < OP_1 || opSmallInt1 > OP_16) {
+		return false
+	}
+	if opSmallInt2 != OP_0 && (opSmallInt2 < OP_1 || opSmallInt2 > OP_16) {
+		return false
+	}
+	// n <= m
+	if opSmallInt1 > opSmallInt2 {
+		return false
+	}
+
+	return true
 }
 
 func (s Script) IsPayToWitnessScriptHash() bool {
@@ -99,7 +132,7 @@ func (s Script) IsWitnessProgram() (bool, int, []byte) {
 		return false, 0, []byte{}
 	}
 	if int(s.data[1]+2) == len(s.data) {
-		version := DecodeOP_N(int(s.data[0]))
+		version := DecodeOPN(s.data[0])
 		program := s.data[2:]
 		return true, version, program
 	}
