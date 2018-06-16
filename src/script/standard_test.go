@@ -7,8 +7,9 @@ import (
 )
 
 func TestSolverP2WPKH(t *testing.T) {
+	// from tx 7dcdd326eeba8aef44f20913751c845a88a98859fcd5e188c0e27f6252004a10
 	Blob := new(blob.Byteblob)
-	Blob.SetHex("0014c13948dfd851ad7d9c68f150bc4c93e252df8026")
+	Blob.SetHex("0014edec29b622585acbc82c914710070831bfb2b648")
 	fmt.Println("byte blob:", Blob.GetData())
 
 	scriptPubKey := new(Script)
@@ -20,8 +21,9 @@ func TestSolverP2WPKH(t *testing.T) {
 }
 
 func TestSolverP2WSH(t *testing.T) {
+	// from tx 14ddab2379a23faf4e3ac26737827a59a0dd78f0c7730e1c925f389238ae9a3b
 	Blob := new(blob.Byteblob)
-	Blob.SetHex("0020558068a61b5569b9f5991ad8c674f5b8ad40125df81faa7d47d8df0c725514b4")
+	Blob.SetHex("00202122f4719add322f4d727f48379f8a8ba36a40ec4473fd99a2fdcfd89a16e048")
 	fmt.Println("byte blob:", Blob.GetData())
 
 	scriptPubKey := new(Script)

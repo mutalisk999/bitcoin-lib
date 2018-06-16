@@ -1,6 +1,10 @@
 package pubkey
 
-import "errors"
+import (
+	"errors"
+	"io"
+	"serialize"
+)
 
 const (
 	PUBLIC_KEY_SIZE            = 65
@@ -37,4 +41,32 @@ func (p *PubKey) SetPubKeyData(pubKeyBytes []byte) error {
 
 func (p PubKey) GetPubKeyData() []byte {
 	return p.data
+}
+
+func (p PubKey) Pack(writer io.Writer) error {
+	err := serialize.PackCompactSize(writer, uint64(len(p.data)))
+	if err != nil {
+		return err
+	}
+	_, err = writer.Write(p.data[0:len(p.data)])
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (p *PubKey) UnPack(reader io.Reader) error {
+	u64, err := serialize.UnPackCompactSize(reader)
+	if err != nil {
+		return err
+	}
+	dataRead := make([]byte, u64)
+	_, err = reader.Read(dataRead[0:u64])
+	if err != nil {
+		return err
+	}
+	for _, c := range dataRead {
+		p.data = append(p.data, c)
+	}
+	return nil
 }
