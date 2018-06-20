@@ -1,70 +1,78 @@
-// Package base58 implements a human-friendly base58 encoding.
-//
-// As opposed to base64 and friends, base58 is typically used to
-// convert integers. You can use big.Int.SetBytes to convert arbitrary
-// bytes to an integer first, and big.Int.Bytes the other way around.
+// Copyright (c) 2013-2015 The btcsuite developers
+// Copyright (c) 2015 The Decred developers
+// Use of this source code is governed by an ISC
+// license that can be found in the LICENSE file.
 
-// from https://github.com/tv42/base58/
+// from https://github.com/decred/base58
 
 package base58
 
 import (
 	"math/big"
-	"strconv"
 )
 
-const alphabet = "123456789abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ"
+//go:generate go run genalphabet.go
 
-var decodeMap [256]byte
+var bigRadix = big.NewInt(58)
+var bigZero = big.NewInt(0)
 
-func init() {
-	for i := 0; i < len(decodeMap); i++ {
-		decodeMap[i] = 0xFF
-	}
-	for i := 0; i < len(alphabet); i++ {
-		decodeMap[alphabet[i]] = byte(i)
-	}
-}
+// Decode decodes a modified base58 string to a byte slice.
+func Decode(b string) []byte {
+	answer := big.NewInt(0)
+	j := big.NewInt(1)
 
-type CorruptInputError int64
-
-func (e CorruptInputError) Error() string {
-	return "illegal base58 data at input byte " + strconv.FormatInt(int64(e), 10)
-}
-
-// Decode a big integer from the bytes. Returns an error on corrupt
-// input.
-func DecodeToBig(src []byte) (*big.Int, error) {
-	n := new(big.Int)
-	radix := big.NewInt(58)
-	for i := 0; i < len(src); i++ {
-		b := decodeMap[src[i]]
-		if b == 0xFF {
-			return nil, CorruptInputError(i)
+	scratch := new(big.Int)
+	for i := len(b) - 1; i >= 0; i-- {
+		tmp := b58[b[i]]
+		if tmp == 255 {
+			return []byte("")
 		}
-		n.Mul(n, radix)
-		n.Add(n, big.NewInt(int64(b)))
+		scratch.SetInt64(int64(tmp))
+		scratch.Mul(j, scratch)
+		answer.Add(answer, scratch)
+		j.Mul(j, bigRadix)
 	}
-	return n, nil
+
+	tmpval := answer.Bytes()
+
+	var numZeros int
+	for numZeros = 0; numZeros < len(b); numZeros++ {
+		if b[numZeros] != alphabetIdx0 {
+			break
+		}
+	}
+	flen := numZeros + len(tmpval)
+	val := make([]byte, flen)
+	copy(val[numZeros:], tmpval)
+
+	return val
 }
 
-// Encode encodes src, appending to dst. Be sure to use the returned
-// new value of dst.
-func EncodeBig(dst []byte, src *big.Int) []byte {
-	start := len(dst)
-	n := new(big.Int)
-	n.Set(src)
-	radix := big.NewInt(58)
-	zero := big.NewInt(0)
+// Encode encodes a byte slice to a modified base58 string.
+func Encode(b []byte) string {
+	x := new(big.Int)
+	x.SetBytes(b)
 
-	for n.Cmp(zero) > 0 {
+	answer := make([]byte, 0, len(b)*136/100)
+	for x.Cmp(bigZero) > 0 {
 		mod := new(big.Int)
-		n.DivMod(n, radix, mod)
-		dst = append(dst, alphabet[mod.Int64()])
+		x.DivMod(x, bigRadix, mod)
+		answer = append(answer, alphabet[mod.Int64()])
 	}
 
-	for i, j := start, len(dst)-1; i < j; i, j = i+1, j-1 {
-		dst[i], dst[j] = dst[j], dst[i]
+	// leading zero bytes
+	for _, i := range b {
+		if i != 0 {
+			break
+		}
+		answer = append(answer, alphabetIdx0)
 	}
-	return dst
+
+	// reverse
+	alen := len(answer)
+	for i := 0; i < alen/2; i++ {
+		answer[i], answer[alen-1-i] = answer[alen-1-i], answer[i]
+	}
+
+	return string(answer)
 }
