@@ -1,8 +1,8 @@
 package script
 
 import (
-	"blob"
 	"bytes"
+	"encoding/hex"
 	"io"
 	"pubkey"
 	"serialize"
@@ -32,9 +32,7 @@ func (s Script) PackToHex() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	Blob := new(blob.Byteblob)
-	Blob.SetData(bytesBuf.Bytes())
-	return Blob.GetHex(), nil
+	return hex.EncodeToString(bytesBuf.Bytes()), nil
 }
 
 func (s *Script) UnPack(reader io.Reader) error {
@@ -54,12 +52,11 @@ func (s *Script) UnPack(reader io.Reader) error {
 }
 
 func (s *Script) UnPackFromHex(hexStr string) error {
-	Blob := new(blob.Byteblob)
-	err := Blob.SetHex(hexStr)
+	scriptBytes, err := hex.DecodeString(hexStr)
 	if err != nil {
 		return err
 	}
-	bytesBuf := bytes.NewBuffer(Blob.GetData())
+	bytesBuf := bytes.NewBuffer(scriptBytes)
 	bufReader := io.Reader(bytesBuf)
 	err = s.UnPack(bufReader)
 	if err != nil {
@@ -173,9 +170,7 @@ func (s ScriptWitness) PackToHex() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	Blob := new(blob.Byteblob)
-	Blob.SetData(bytesBuf.Bytes())
-	return Blob.GetHex(), nil
+	return hex.EncodeToString(bytesBuf.Bytes()), nil
 }
 
 func (s *ScriptWitness) UnPack(reader io.Reader) error {
@@ -199,12 +194,11 @@ func (s *ScriptWitness) UnPack(reader io.Reader) error {
 }
 
 func (s *ScriptWitness) UnPackFromHex(hexStr string) error {
-	Blob := new(blob.Byteblob)
-	err := Blob.SetHex(hexStr)
+	scriptBytes, err := hex.DecodeString(hexStr)
 	if err != nil {
 		return err
 	}
-	bytesBuf := bytes.NewBuffer(Blob.GetData())
+	bytesBuf := bytes.NewBuffer(scriptBytes)
 	bufReader := io.Reader(bytesBuf)
 	err = s.UnPack(bufReader)
 	if err != nil {

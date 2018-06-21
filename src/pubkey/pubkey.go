@@ -4,6 +4,7 @@ import (
 	"errors"
 	"io"
 	"serialize"
+	"utility"
 )
 
 const (
@@ -39,8 +40,12 @@ func (p *PubKey) SetPubKeyData(pubKeyBytes []byte) error {
 	return nil
 }
 
-func (p PubKey) GetPubKeyData() []byte {
-	return p.data
+func (p PubKey) GetPubKeyData() ([]byte, error) {
+	isValid := ValidSize(p.data)
+	if !isValid {
+		return []byte{}, errors.New("PubKey::GetPubKeyData : invalid pubkey size")
+	}
+	return p.data, nil
 }
 
 func (p PubKey) Pack(writer io.Writer) error {
@@ -69,4 +74,12 @@ func (p *PubKey) UnPack(reader io.Reader) error {
 		p.data = append(p.data, c)
 	}
 	return nil
+}
+
+func (p *PubKey) CalcKeyIDBytes() ([]byte, error) {
+	isValid := ValidSize(p.data)
+	if !isValid {
+		return []byte{}, errors.New("PubKey::CaclKeyIDBytes : invalid pubkey size")
+	}
+	return utility.Hash160(p.data), nil
 }

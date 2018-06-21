@@ -2,6 +2,7 @@ package script
 
 import (
 	"errors"
+	"keyid"
 	"pubkey"
 )
 
@@ -26,7 +27,7 @@ func loadPubKeys(pubKeysBytes []byte) (error, [][]byte) {
 		if err != nil {
 			return err, [][]byte{}
 		}
-		pubKeys = append(pubKeys, pubKeyNew.GetPubKeyData())
+		pubKeys = append(pubKeys, pubKeyBytes)
 
 		if indexPubKeyEnd == len(pubKeysBytes) {
 			break
@@ -97,4 +98,101 @@ func Solver(scriptPubKey Script) (bool, int, [][]byte) {
 	}
 
 	return false, TX_NONSTANDARD, [][]byte{}
+}
+
+func ExtractDestination(scriptPubKey Script) (bool, int, []string) {
+	_, whichType, vSolutions := Solver(scriptPubKey)
+	if whichType == TX_NONSTANDARD {
+		return false, TX_NONSTANDARD, []string{}
+	}
+
+	if whichType == TX_NULL_DATA {
+		return true, TX_NULL_DATA, []string{}
+	}
+
+	// pubkey
+	if whichType == TX_PUBKEY {
+		soluPubKey := new(pubkey.PubKey)
+		soluPubKey.SetPubKeyData(vSolutions[0])
+		soluKeyIDBytes, err := soluPubKey.CalcKeyIDBytes()
+		if err != nil {
+			return false, TX_NONSTANDARD, []string{}
+		}
+		soluKeyID := new(keyid.KeyID)
+		soluKeyID.SetKeyIDData(soluKeyIDBytes)
+		keyIDBase58, err := soluKeyID.ToBase58Address(0)
+		if err != nil {
+			return false, TX_NONSTANDARD, []string{}
+		}
+		return true, TX_PUBKEY, []string{keyIDBase58}
+	}
+
+	// p2pkh
+	if whichType == TX_PUBKEYHASH {
+		soluKeyID := new(keyid.KeyID)
+		soluKeyID.SetKeyIDData(vSolutions[0])
+		keyIDBase58, err := soluKeyID.ToBase58Address(0)
+		if err != nil {
+			return false, TX_NONSTANDARD, []string{}
+		}
+		return true, TX_PUBKEYHASH, []string{keyIDBase58}
+	}
+
+	// multisig
+	if whichType == TX_MULTISIG {
+		var keyIDsBase58 []string
+		for i := 0; i < len(vSolutions); i++ {
+			soluPubKey := new(pubkey.PubKey)
+			soluPubKey.SetPubKeyData(vSolutions[i])
+			soluKeyIDBytes, err := soluPubKey.CalcKeyIDBytes()
+			if err != nil {
+				return false, TX_NONSTANDARD, []string{}
+			}
+			soluKeyID := new(keyid.KeyID)
+			soluKeyID.SetKeyIDData(soluKeyIDBytes)
+			keyIDBase58, err := soluKeyID.ToBase58Address(0)
+			if err != nil {
+				return false, TX_NONSTANDARD, []string{}
+			}
+			keyIDsBase58 = append(keyIDsBase58, keyIDBase58)
+		}
+		return true, TX_MULTISIG, keyIDsBase58
+	}
+
+	// p2sh
+	if whichType == TX_SCRIPTHASH {
+		soluKeyID := new(keyid.KeyID)
+		soluKeyID.SetKeyIDData(vSolutions[0])
+		keyIDBase58, err := soluKeyID.ToBase58Address(5)
+		if err != nil {
+			return false, TX_NONSTANDARD, []string{}
+		}
+		return true, TX_SCRIPTHASH, []string{keyIDBase58}
+	}
+
+	if whichType == TX_WITNESS_UNKNOWN {
+		return true, TX_WITNESS_UNKNOWN, []string{}
+	}
+
+	// p2wpkh
+	if whichType == TX_WITNESS_V0_KEYHASH {
+		soluKeyID := new(keyid.KeyID)
+		soluKeyID.SetKeyIDData(vSolutions[0])
+		keyIDBech32, err := soluKeyID.ToBech32AddressP2WPKH("bc")
+		if err != nil {
+			return false, TX_NONSTANDARD, []string{}
+		}
+		return true, TX_WITNESS_V0_KEYHASH, []string{keyIDBech32}
+	}
+
+	// p2wsh
+	if whichType == TX_WITNESS_V0_SCRIPTHASH {
+		keyIDBech32, err := keyid.ToBech32AddressP2WSH("bc", vSolutions[0])
+		if err != nil {
+			return false, TX_NONSTANDARD, []string{}
+		}
+		return true, TX_WITNESS_V0_KEYHASH, []string{keyIDBech32}
+	}
+
+	return false, TX_NONSTANDARD, []string{}
 }

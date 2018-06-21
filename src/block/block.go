@@ -2,8 +2,8 @@ package block
 
 import (
 	"bigint"
-	"blob"
 	"bytes"
+	"encoding/hex"
 	"io"
 	"serialize"
 	"transaction"
@@ -107,9 +107,7 @@ func (b Block) PackToHex() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	Blob := new(blob.Byteblob)
-	Blob.SetData(bytesBuf.Bytes())
-	return Blob.GetHex(), nil
+	return hex.EncodeToString(bytesBuf.Bytes()), nil
 }
 
 func (b *Block) UnPack(reader io.Reader) error {
@@ -135,12 +133,11 @@ func (b *Block) UnPack(reader io.Reader) error {
 }
 
 func (b *Block) UnPackFromHex(hexStr string) error {
-	Blob := new(blob.Byteblob)
-	err := Blob.SetHex(hexStr)
+	blockBytes, err := hex.DecodeString(hexStr)
 	if err != nil {
 		return err
 	}
-	bytesBuf := bytes.NewBuffer(Blob.GetData())
+	bytesBuf := bytes.NewBuffer(blockBytes)
 	bufReader := io.Reader(bytesBuf)
 	err = b.UnPack(bufReader)
 	if err != nil {
