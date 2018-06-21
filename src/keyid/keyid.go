@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	KEY_ID_SIZE = 0x14
+	KEY_ID_SIZE = 20
 )
 
 type KeyID struct {
