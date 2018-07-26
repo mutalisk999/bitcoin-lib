@@ -167,6 +167,19 @@ func PackFloat64(writer io.Writer, f64 float64) error {
 	return packF64(writer, f64)
 }
 
+func CompactSizeLen(ui64 uint64) uint32 {
+	if ui64 < 253 {
+		return 1
+	} else if ui64 <= ((2 << 15) - 1) {
+		return 1 + 2
+	} else if ui64 <= ((2 << 31) - 1) {
+		return 1 + 4
+	} else {
+		return 1 + 8
+	}
+	return 0
+}
+
 func PackCompactSize(writer io.Writer, ui64 uint64) error {
 	if ui64 < 253 {
 		return PackUint8(writer, uint8(ui64))
