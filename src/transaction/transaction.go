@@ -242,7 +242,6 @@ func (t Transaction) CalcTrxId() (bigint.Uint256, error) {
 		return bigint.Uint256{}, err
 	}
 	bytesHash := utility.Sha256(utility.Sha256(bytesBuf.Bytes()))
-	// reverse the hash bytes
 	ui256 := new(bigint.Uint256)
 	ui256.SetData(bytesHash)
 	return *ui256, nil
