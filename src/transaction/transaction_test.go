@@ -107,3 +107,10 @@ func TestWitnessTransactionHex(t *testing.T) {
 	hexStr, _ := trx.PackToHex()
 	fmt.Println("hex string:", hexStr)
 }
+
+func TestCalcTrxId(t *testing.T) {
+	trx := new(Transaction)
+	trx.UnPackFromHex("01000000010123449fad6289dda5365a197fa822e320cdfc106bed243bf773cac64cfdb237050000006a473044022036be6403aeb4e0e6fd54720b328d9d81bea32fb79684da0288743668fb5ef3ee02202023a71ef7217061fb9b4f35a05143de71447032e5a35b39c3d14b3210bad10b0121032725846bb7bc2e47b7b5a50670d77c8268f4d7f3243bdcf1b22174a67faaf528feffffff0200213900000000001976a914659042e01e864e2f29641ea3a213c51a956d33c788ac288c0f00000000001976a9144fc238bcda3f884ff6ce8d9feeb89b50dfd3da8888ac2c480700")
+	trxId, _ := trx.CalcTrxId()
+	fmt.Println("trx id:", trxId)
+}

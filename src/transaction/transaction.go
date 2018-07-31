@@ -8,6 +8,8 @@ import (
 	"github.com/mutalisk999/bitcoin-lib/src/script"
 	"github.com/mutalisk999/bitcoin-lib/src/serialize"
 	"io"
+	"github.com/mutalisk999/bitcoin-lib/src/utility"
+	"encoding/hex"
 )
 
 type OutPoint struct {
@@ -209,6 +211,43 @@ func (t Transaction) PackToHex() (string, error) {
 	Blob := new(blob.Byteblob)
 	Blob.SetData(bytesBuf.Bytes())
 	return Blob.GetHex(), nil
+}
+
+func (t Transaction) PackNoWitness(writer io.Writer) error {
+	err := serialize.PackInt32(writer, t.Version)
+	if err != nil {
+		return err
+	}
+	// pack Vin
+	err = t.packVin(writer, t.Vin)
+	if err != nil {
+		return err
+	}
+	// pack Vout
+	err = t.packVout(writer, t.Vout)
+	if err != nil {
+		return err
+	}
+	err = serialize.PackUint32(writer, t.LockTime)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (t Transaction) CalcTrxId() (string, error) {
+	bytesBuf := bytes.NewBuffer([]byte{})
+	bufWriter := io.Writer(bytesBuf)
+	err := t.PackNoWitness(bufWriter)
+	if err != nil {
+		return "", err
+	}
+	bytesHash := utility.Sha256(utility.Sha256(bytesBuf.Bytes()))
+	// reverse the hash bytes
+	for i, j := 0, len(bytesHash)-1; i < j; i, j = i+1, j-1 {
+		bytesHash[i], bytesHash[j] = bytesHash[j], bytesHash[i]
+	}
+	return hex.EncodeToString(bytesHash), nil
 }
 
 func (t *Transaction) unpackVin(reader io.Reader) ([]TxIn, error) {
