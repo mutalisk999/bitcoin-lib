@@ -9,7 +9,6 @@ import (
 	"github.com/mutalisk999/bitcoin-lib/src/serialize"
 	"io"
 	"github.com/mutalisk999/bitcoin-lib/src/utility"
-	"encoding/hex"
 )
 
 type OutPoint struct {
@@ -235,19 +234,18 @@ func (t Transaction) PackNoWitness(writer io.Writer) error {
 	return nil
 }
 
-func (t Transaction) CalcTrxId() (string, error) {
+func (t Transaction) CalcTrxId() (bigint.Uint256, error) {
 	bytesBuf := bytes.NewBuffer([]byte{})
 	bufWriter := io.Writer(bytesBuf)
 	err := t.PackNoWitness(bufWriter)
 	if err != nil {
-		return "", err
+		return bigint.Uint256{}, err
 	}
 	bytesHash := utility.Sha256(utility.Sha256(bytesBuf.Bytes()))
 	// reverse the hash bytes
-	for i, j := 0, len(bytesHash)-1; i < j; i, j = i+1, j-1 {
-		bytesHash[i], bytesHash[j] = bytesHash[j], bytesHash[i]
-	}
-	return hex.EncodeToString(bytesHash), nil
+	ui256 := new(bigint.Uint256)
+	ui256.SetData(bytesHash)
+	return *ui256, nil
 }
 
 func (t *Transaction) unpackVin(reader io.Reader) ([]TxIn, error) {
