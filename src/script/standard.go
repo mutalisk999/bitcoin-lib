@@ -2,8 +2,8 @@ package script
 
 import (
 	"errors"
-	"keyid"
-	"pubkey"
+	"github.com/mutalisk999/bitcoin-lib/src/keyid"
+	"github.com/mutalisk999/bitcoin-lib/src/pubkey"
 )
 
 func loadPubKeys(pubKeysBytes []byte) (error, [][]byte) {

@@ -1,10 +1,10 @@
 package bigint
 
 import (
-	"blob"
 	"errors"
+	"github.com/mutalisk999/bitcoin-lib/src/blob"
+	"github.com/mutalisk999/bitcoin-lib/src/utility"
 	"io"
-	"utility"
 )
 
 type Uint256 struct {

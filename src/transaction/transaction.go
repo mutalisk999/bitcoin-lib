@@ -1,13 +1,13 @@
 package transaction
 
 import (
-	"bigint"
-	"blob"
 	"bytes"
 	"errors"
+	"github.com/mutalisk999/bitcoin-lib/src/bigint"
+	"github.com/mutalisk999/bitcoin-lib/src/blob"
+	"github.com/mutalisk999/bitcoin-lib/src/script"
+	"github.com/mutalisk999/bitcoin-lib/src/serialize"
 	"io"
-	"script"
-	"serialize"
 )
 
 type OutPoint struct {

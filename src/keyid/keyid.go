@@ -1,10 +1,10 @@
 package keyid
 
 import (
-	"base58"
-	"bech32"
 	"errors"
-	"utility"
+	"github.com/mutalisk999/bitcoin-lib/src/base58"
+	"github.com/mutalisk999/bitcoin-lib/src/bech32"
+	"github.com/mutalisk999/bitcoin-lib/src/utility"
 )
 
 const (

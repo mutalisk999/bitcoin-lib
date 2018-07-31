@@ -2,9 +2,9 @@ package blob
 
 import (
 	"errors"
+	"github.com/mutalisk999/bitcoin-lib/src/serialize"
+	"github.com/mutalisk999/bitcoin-lib/src/utility"
 	"io"
-	"serialize"
-	"utility"
 )
 
 type Byteblob struct {

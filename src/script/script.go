@@ -3,10 +3,10 @@ package script
 import (
 	"bytes"
 	"encoding/hex"
+	"github.com/mutalisk999/bitcoin-lib/src/pubkey"
+	"github.com/mutalisk999/bitcoin-lib/src/serialize"
+	"github.com/mutalisk999/bitcoin-lib/src/utility"
 	"io"
-	"pubkey"
-	"serialize"
-	"utility"
 )
 
 type Script struct {

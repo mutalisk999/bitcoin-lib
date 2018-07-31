@@ -3,7 +3,7 @@ package serialize
 import "io"
 import (
 	"errors"
-	"utility"
+	"github.com/mutalisk999/bitcoin-lib/src/utility"
 )
 
 func packU8(writer io.Writer, data8 uint8) error {
@@ -183,14 +183,14 @@ func CompactSizeLen(ui64 uint64) uint32 {
 func PackCompactSize(writer io.Writer, ui64 uint64) error {
 	if ui64 < 253 {
 		return PackUint8(writer, uint8(ui64))
-	} else if ui64 <= ((2<<15)-1) {
+	} else if ui64 <= ((2 << 15) - 1) {
 		err := PackUint8(writer, uint8(253))
 		if err == nil {
 			return PackUint16(writer, uint16(ui64))
 		} else {
 			return err
 		}
-	} else if ui64 <= ((2<<31)-1) {
+	} else if ui64 <= ((2 << 31) - 1) {
 		err := PackUint8(writer, uint8(254))
 		if err == nil {
 			return PackUint32(writer, uint32(ui64))

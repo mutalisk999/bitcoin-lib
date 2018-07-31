@@ -86,9 +86,9 @@ func TestPackFloat64(t *testing.T) {
 
 func TestCompactSizeLen(t *testing.T) {
 	fmt.Println(CompactSizeLen(252))
-	fmt.Println(CompactSizeLen((2<<15) - 1))
-	fmt.Println(CompactSizeLen((2<<31) - 1))
-	fmt.Println(CompactSizeLen((2<<63) - 1))
+	fmt.Println(CompactSizeLen((2 << 15) - 1))
+	fmt.Println(CompactSizeLen((2 << 31) - 1))
+	fmt.Println(CompactSizeLen((2 << 63) - 1))
 }
 
 func TestPackCompactSize(t *testing.T) {

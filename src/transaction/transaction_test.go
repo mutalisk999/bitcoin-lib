@@ -1,9 +1,9 @@
 package transaction
 
 import (
-	"blob"
 	"bytes"
 	"fmt"
+	"github.com/mutalisk999/bitcoin-lib/src/blob"
 	"io"
 	"testing"
 )

@@ -2,8 +2,8 @@ package blob
 
 import (
 	"errors"
+	"github.com/mutalisk999/bitcoin-lib/src/utility"
 	"io"
-	"utility"
 )
 
 type Baseblob struct {

@@ -1,12 +1,12 @@
 package block
 
 import (
-	"bigint"
 	"bytes"
 	"encoding/hex"
+	"github.com/mutalisk999/bitcoin-lib/src/bigint"
+	"github.com/mutalisk999/bitcoin-lib/src/serialize"
+	"github.com/mutalisk999/bitcoin-lib/src/transaction"
 	"io"
-	"serialize"
-	"transaction"
 )
 
 type BlockHeader struct {
