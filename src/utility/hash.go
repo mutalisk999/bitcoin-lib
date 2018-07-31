@@ -3,7 +3,7 @@ package utility
 import (
 	"crypto/sha256"
 	"encoding/hex"
-	"ripemd160"
+	"github.com/mutalisk999/bitcoin-lib/src/ripemd160"
 )
 
 func Sha256(bytes []byte) []byte {
