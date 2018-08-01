@@ -12,3 +12,29 @@ const (
 	TX_WITNESS_V0_KEYHASH
 	TX_WITNESS_UNKNOWN //!< Only for Witness versions not already defined above
 )
+
+func IsSingleAddress(scriptType int) bool {
+	if scriptType == TX_PUBKEY || scriptType == TX_PUBKEYHASH || scriptType == TX_SCRIPTHASH ||
+		scriptType == TX_WITNESS_V0_SCRIPTHASH || scriptType == TX_WITNESS_V0_KEYHASH {
+			return true
+	}
+	return false
+}
+
+func IsMultiAddress(scriptType int) bool {
+	if scriptType == TX_MULTISIG {
+		return true
+	}
+	return false
+}
+
+func IsNoneAddress(scriptType int) bool {
+	if IsSingleAddress(scriptType) {
+		return false
+	} else if IsMultiAddress(scriptType) {
+		return false
+	} else {
+		return true
+	}
+	return false
+}
