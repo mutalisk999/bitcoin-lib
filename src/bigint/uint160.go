@@ -5,6 +5,7 @@ import (
 	"github.com/mutalisk999/bitcoin-lib/src/blob"
 	"github.com/mutalisk999/bitcoin-lib/src/utility"
 	"io"
+	"bytes"
 )
 
 type Uint160 struct {
