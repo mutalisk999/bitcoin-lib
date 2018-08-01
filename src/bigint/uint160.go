@@ -69,3 +69,9 @@ func (u *Uint160) UnPack(reader io.Reader) error {
 	}
 	return nil
 }
+
+func IsUint160Equal(l *Uint160, r *Uint160) bool{
+	dataLeft := l.GetData()
+	dataRight := r.GetData()
+	return bytes.Equal(dataLeft, dataRight)
+}
