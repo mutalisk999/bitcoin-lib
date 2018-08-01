@@ -1,11 +1,11 @@
 package bigint
 
 import (
+	"bytes"
 	"errors"
 	"github.com/mutalisk999/bitcoin-lib/src/blob"
 	"github.com/mutalisk999/bitcoin-lib/src/utility"
 	"io"
-	"bytes"
 )
 
 type Uint256 struct {
@@ -71,7 +71,7 @@ func (u *Uint256) UnPack(reader io.Reader) error {
 	return nil
 }
 
-func IsUint256Equal(l *Uint256, r *Uint256) bool{
+func IsUint256Equal(l *Uint256, r *Uint256) bool {
 	dataLeft := l.GetData()
 	dataRight := r.GetData()
 	return bytes.Equal(dataLeft, dataRight)

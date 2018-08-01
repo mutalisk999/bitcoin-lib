@@ -7,8 +7,8 @@ import (
 	"github.com/mutalisk999/bitcoin-lib/src/blob"
 	"github.com/mutalisk999/bitcoin-lib/src/script"
 	"github.com/mutalisk999/bitcoin-lib/src/serialize"
-	"io"
 	"github.com/mutalisk999/bitcoin-lib/src/utility"
+	"io"
 )
 
 type OutPoint struct {

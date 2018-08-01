@@ -16,7 +16,7 @@ const (
 func IsSingleAddress(scriptType int) bool {
 	if scriptType == TX_PUBKEY || scriptType == TX_PUBKEYHASH || scriptType == TX_SCRIPTHASH ||
 		scriptType == TX_WITNESS_V0_SCRIPTHASH || scriptType == TX_WITNESS_V0_KEYHASH {
-			return true
+		return true
 	}
 	return false
 }
