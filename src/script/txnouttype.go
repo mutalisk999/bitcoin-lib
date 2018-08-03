@@ -38,3 +38,28 @@ func IsNoneAddress(scriptType int) bool {
 	}
 	return false
 }
+
+func GetScriptTypeStr(scriptType int) string {
+	if scriptType == TX_NONSTANDARD {
+		return "non-standard"
+	} else if scriptType == TX_PUBKEY {
+		return "p2pk"
+	} else if scriptType == TX_PUBKEYHASH {
+		return "p2pkh"
+	} else if scriptType == TX_SCRIPTHASH {
+		return "p2sh"
+	} else if scriptType == TX_MULTISIG {
+		return "multisig"
+	} else if scriptType == TX_NULL_DATA {
+		return "nulldata"
+	} else if scriptType == TX_WITNESS_V0_SCRIPTHASH {
+		return "p2wsh"
+	} else if scriptType == TX_WITNESS_V0_KEYHASH {
+		return "p2wphk"
+	} else if scriptType == TX_WITNESS_UNKNOWN {
+		return "witness-unknown"
+	} else {
+		return "non-standard"
+	}
+	return "non-standard"
+}

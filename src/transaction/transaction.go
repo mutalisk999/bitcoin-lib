@@ -2,6 +2,7 @@ package transaction
 
 import (
 	"bytes"
+	"encoding/hex"
 	"errors"
 	"github.com/mutalisk999/bitcoin-lib/src/bigint"
 	"github.com/mutalisk999/bitcoin-lib/src/blob"
@@ -9,6 +10,7 @@ import (
 	"github.com/mutalisk999/bitcoin-lib/src/serialize"
 	"github.com/mutalisk999/bitcoin-lib/src/utility"
 	"io"
+	"strings"
 )
 
 type OutPoint struct {
@@ -38,6 +40,11 @@ func (o *OutPoint) UnPack(reader io.Reader) error {
 		return err
 	}
 	return nil
+}
+
+type OutPointPrintAble struct {
+	Hash string
+	N    uint32
 }
 
 type TxIn struct {
@@ -79,6 +86,13 @@ func (t *TxIn) UnPack(reader io.Reader) error {
 	return nil
 }
 
+type TxInPrintAble struct {
+	PrevOut       OutPointPrintAble
+	ScriptSig     string
+	Sequence      uint32
+	ScriptWitness []string
+}
+
 type TxOut struct {
 	Value        int64
 	ScriptPubKey script.Script
@@ -107,6 +121,13 @@ func (t *TxOut) UnPack(reader io.Reader) error {
 		return err
 	}
 	return nil
+}
+
+type TxOutPrintAble struct {
+	Value        int64
+	ScriptPubKey string
+	Address      string
+	ScriptType   string
 }
 
 type Transaction struct {
@@ -356,4 +377,51 @@ func (t *Transaction) UnPackFromHex(hexStr string) error {
 		return err
 	}
 	return nil
+}
+
+type TrxPrintAble struct {
+	Vin      []TxInPrintAble
+	Vout     []TxOutPrintAble
+	Version  int32
+	LockTime uint32
+}
+
+func (t *Transaction) GetTrxPrintAble() TrxPrintAble {
+	trxPrintAble := new(TrxPrintAble)
+	for _, vin := range t.Vin {
+		vinPrintAble := new(TxInPrintAble)
+		vinPrintAble.PrevOut.Hash = vin.PrevOut.Hash.GetHex()
+		vinPrintAble.PrevOut.N = vin.PrevOut.N
+		if vin.PrevOut.Hash.GetHex() == "0000000000000000000000000000000000000000000000000000000000000000" {
+			vinPrintAble.PrevOut.Hash = ""
+		}
+		vinPrintAble.ScriptSig = hex.EncodeToString(vin.ScriptSig.GetScriptBytes())
+		vinPrintAble.Sequence = vin.Sequence
+		vinPrintAble.ScriptWitness = []string{}
+		for _, scriptWitness := range vin.ScriptWitness.GetScriptWitnessBytes() {
+			vinPrintAble.ScriptWitness = append(vinPrintAble.ScriptWitness, hex.EncodeToString(scriptWitness))
+		}
+		trxPrintAble.Vin = append(trxPrintAble.Vin, *vinPrintAble)
+	}
+	for _, vout := range t.Vout {
+		voutPrintAble := new(TxOutPrintAble)
+		voutPrintAble.Value = vout.Value
+		voutPrintAble.ScriptPubKey = hex.EncodeToString(vout.ScriptPubKey.GetScriptBytes())
+		isSucc, scriptType, addresses := script.ExtractDestination(vout.ScriptPubKey)
+		var addrStr string
+		if isSucc {
+			addrStr = ""
+			if script.IsSingleAddress(scriptType) {
+				addrStr = addresses[0]
+			} else if script.IsMultiAddress(scriptType) {
+				addrStr = strings.Join(addresses, ",")
+			}
+		}
+		voutPrintAble.Address = addrStr
+		voutPrintAble.ScriptType = script.GetScriptTypeStr(scriptType)
+		trxPrintAble.Vout = append(trxPrintAble.Vout, *voutPrintAble)
+	}
+	trxPrintAble.Version = t.Version
+	trxPrintAble.LockTime = t.LockTime
+	return *trxPrintAble
 }
