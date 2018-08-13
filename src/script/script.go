@@ -40,14 +40,12 @@ func (s *Script) UnPack(reader io.Reader) error {
 	if err != nil {
 		return err
 	}
-	dataRead := make([]byte, u64)
+	dataRead := make([]byte, u64, u64)
 	_, err = reader.Read(dataRead[0:u64])
 	if err != nil {
 		return err
 	}
-	for _, c := range dataRead {
-		s.data = append(s.data, c)
-	}
+	s.data = dataRead
 	return nil
 }
 
@@ -183,7 +181,7 @@ func (s *ScriptWitness) UnPack(reader io.Reader) error {
 		if err != nil {
 			return err
 		}
-		dataRead := make([]byte, u64)
+		dataRead := make([]byte, u64, u64)
 		_, err = reader.Read(dataRead[0:u64])
 		if err != nil {
 			return err

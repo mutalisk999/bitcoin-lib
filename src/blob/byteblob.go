@@ -23,6 +23,7 @@ func (b *Byteblob) SetHex(hexStr string) error {
 		return errors.New("invalid hex string")
 	}
 	blobLength := len(hexStr) / 2
+	b.data = make([]byte, 0, blobLength)
 	for i := 0; i < blobLength; i++ {
 		num1, _ := utility.HexCharToNumber(hexStr[2*i])
 		num2, _ := utility.HexCharToNumber(hexStr[2*i+1])
@@ -33,6 +34,7 @@ func (b *Byteblob) SetHex(hexStr string) error {
 
 func (b Byteblob) GetHex() string {
 	var bytes []byte
+	bytes = make([]byte, 0, 2*len(b.data))
 	for _, c := range b.data {
 		var h4b byte
 		var l4b byte
@@ -68,13 +70,11 @@ func (b *Byteblob) UnPack(reader io.Reader) error {
 	if err != nil {
 		return err
 	}
-	dataRead := make([]byte, u64)
+	dataRead := make([]byte, u64, u64)
 	_, err = reader.Read(dataRead[0:u64])
 	if err != nil {
 		return err
 	}
-	for _, c := range dataRead {
-		b.data = append(b.data, c)
-	}
+	b.data = dataRead
 	return nil
 }

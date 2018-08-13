@@ -146,12 +146,12 @@ func (t Transaction) HasWitness() bool {
 	return false
 }
 
-func (t Transaction) packVin(writer io.Writer, vin []TxIn) error {
-	err := serialize.PackCompactSize(writer, uint64(len(vin)))
+func (t Transaction) packVin(writer io.Writer, vin *[]TxIn) error {
+	err := serialize.PackCompactSize(writer, uint64(len(*vin)))
 	if err != nil {
 		return err
 	}
-	for _, v := range vin {
+	for _, v := range *vin {
 		err = v.Pack(writer)
 		if err != nil {
 			return err
@@ -160,12 +160,12 @@ func (t Transaction) packVin(writer io.Writer, vin []TxIn) error {
 	return nil
 }
 
-func (t Transaction) packVout(writer io.Writer, vout []TxOut) error {
-	err := serialize.PackCompactSize(writer, uint64(len(vout)))
+func (t Transaction) packVout(writer io.Writer, vout *[]TxOut) error {
+	err := serialize.PackCompactSize(writer, uint64(len(*vout)))
 	if err != nil {
 		return err
 	}
-	for _, v := range vout {
+	for _, v := range *vout {
 		err = v.Pack(writer)
 		if err != nil {
 			return err
@@ -186,7 +186,7 @@ func (t Transaction) Pack(writer io.Writer) error {
 	if flags == 1 {
 		// pack vinDummy and flags
 		var vinDummy []TxIn
-		err = t.packVin(writer, vinDummy)
+		err = t.packVin(writer, &vinDummy)
 		if err != nil {
 			return err
 		}
@@ -196,12 +196,12 @@ func (t Transaction) Pack(writer io.Writer) error {
 		}
 	}
 	// pack Vin
-	err = t.packVin(writer, t.Vin)
+	err = t.packVin(writer, &t.Vin)
 	if err != nil {
 		return err
 	}
 	// pack Vout
-	err = t.packVout(writer, t.Vout)
+	err = t.packVout(writer, &t.Vout)
 	if err != nil {
 		return err
 	}
@@ -239,12 +239,12 @@ func (t Transaction) PackNoWitness(writer io.Writer) error {
 		return err
 	}
 	// pack Vin
-	err = t.packVin(writer, t.Vin)
+	err = t.packVin(writer, &t.Vin)
 	if err != nil {
 		return err
 	}
 	// pack Vout
-	err = t.packVout(writer, t.Vout)
+	err = t.packVout(writer, &t.Vout)
 	if err != nil {
 		return err
 	}
@@ -268,12 +268,13 @@ func (t Transaction) CalcTrxId() (bigint.Uint256, error) {
 	return *ui256, nil
 }
 
-func (t *Transaction) unpackVin(reader io.Reader) ([]TxIn, error) {
+func (t *Transaction) unpackVin(reader io.Reader) (*[]TxIn, error) {
 	var vin []TxIn
 	ui64, err := serialize.UnPackCompactSize(reader)
 	if err != nil {
 		return nil, err
 	}
+	vin = make([]TxIn, 0, ui64)
 	for i := 0; i < int(ui64); i++ {
 		var v TxIn
 		err = v.UnPack(reader)
@@ -282,15 +283,16 @@ func (t *Transaction) unpackVin(reader io.Reader) ([]TxIn, error) {
 		}
 		vin = append(vin, v)
 	}
-	return vin, nil
+	return &vin, nil
 }
 
-func (t *Transaction) unpackVout(reader io.Reader) ([]TxOut, error) {
+func (t *Transaction) unpackVout(reader io.Reader) (*[]TxOut, error) {
 	var vout []TxOut
 	ui64, err := serialize.UnPackCompactSize(reader)
 	if err != nil {
 		return nil, err
 	}
+	vout = make([]TxOut, 0, ui64)
 	for i := 0; i < int(ui64); i++ {
 		var v TxOut
 		err = v.UnPack(reader)
@@ -299,14 +301,14 @@ func (t *Transaction) unpackVout(reader io.Reader) ([]TxOut, error) {
 		}
 		vout = append(vout, v)
 	}
-	return vout, nil
+	return &vout, nil
 }
 
 func (t *Transaction) UnPack(reader io.Reader) error {
 	var err error
 	var flags uint8 = 0
-	var vin []TxIn
-	var vout []TxOut
+	var vin *[]TxIn
+	var vout *[]TxOut
 	t.Version, err = serialize.UnPackInt32(reader)
 	if err != nil {
 		return err
@@ -316,8 +318,8 @@ func (t *Transaction) UnPack(reader io.Reader) error {
 	if err != nil {
 		return err
 	}
-	t.Vin = vin
-	if len(vin) == 0 { // witness
+	t.Vin = *vin
+	if len(*vin) == 0 { // witness
 		flags, err = serialize.UnPackUint8(reader)
 		if err != nil {
 			return err
@@ -328,13 +330,13 @@ func (t *Transaction) UnPack(reader io.Reader) error {
 			if err != nil {
 				return err
 			}
-			t.Vin = vin
+			t.Vin = *vin
 			// unpack Vout
 			vout, err = t.unpackVout(reader)
 			if err != nil {
 				return err
 			}
-			t.Vout = vout
+			t.Vout = *vout
 		}
 	} else { // not witness
 		// unpack Vout
@@ -342,7 +344,7 @@ func (t *Transaction) UnPack(reader io.Reader) error {
 		if err != nil {
 			return err
 		}
-		t.Vout = vout
+		t.Vout = *vout
 	}
 	if (flags & 1) == 1 {
 		flags = flags ^ 1

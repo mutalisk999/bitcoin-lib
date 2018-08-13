@@ -12,6 +12,7 @@ type Baseblob struct {
 
 func DataReverse(dataIn []byte) []byte {
 	var dataRet []byte
+	dataRet = make([]byte, 0, len(dataIn))
 	for i := len(dataIn) - 1; i >= 0; i-- {
 		dataRet = append(dataRet, dataIn[i])
 	}
@@ -30,6 +31,7 @@ func (b *Baseblob) SetHex(hexStr string) error {
 		return errors.New("invalid hex string")
 	}
 	blobLength := len(hexStr) / 2
+	b.data = make([]byte, 0, blobLength)
 	for i := blobLength - 1; i >= 0; i-- {
 		num1, _ := utility.HexCharToNumber(hexStr[2*i])
 		num2, _ := utility.HexCharToNumber(hexStr[2*i+1])
@@ -41,6 +43,7 @@ func (b *Baseblob) SetHex(hexStr string) error {
 func (b Baseblob) GetHex() string {
 	var bytes []byte
 	dataRet := DataReverse(b.data)
+	bytes = make([]byte, 0, 2*len(dataRet))
 	for _, c := range dataRet {
 		var h4b byte
 		var l4b byte
@@ -68,13 +71,11 @@ func (b Baseblob) Pack(writer io.Writer, packSize int) error {
 }
 
 func (b *Baseblob) UnPack(reader io.Reader, unpackSize int) error {
-	dataRead := make([]byte, unpackSize)
+	dataRead := make([]byte, unpackSize, unpackSize)
 	_, err := reader.Read(dataRead[0:unpackSize])
 	if err != nil {
 		return err
 	}
-	for _, c := range dataRead {
-		b.data = append(b.data, c)
-	}
+	b.data = dataRead
 	return nil
 }

@@ -121,6 +121,7 @@ func (b *Block) UnPack(reader io.Reader) error {
 	if err != nil {
 		return err
 	}
+	b.Vtx = make([]transaction.Transaction, 0, txCount)
 	for i := 0; i < int(txCount); i++ {
 		var tx transaction.Transaction
 		err = tx.UnPack(reader)
