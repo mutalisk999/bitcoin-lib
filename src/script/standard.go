@@ -22,7 +22,7 @@ func loadPubKeys(pubKeysBytes []byte) (error, [][]byte) {
 		}
 
 		pubKeyBytes := pubKeysBytes[indexPubKeyStart+1 : indexPubKeyEnd]
-		pubKeyNew := new(pubkey.PubKey)
+		var pubKeyNew pubkey.PubKey
 		err := pubKeyNew.SetPubKeyData(pubKeyBytes)
 		if err != nil {
 			return err, [][]byte{}
@@ -71,7 +71,7 @@ func Solver(scriptPubKey Script) (bool, int, [][]byte) {
 	// p2pk
 	if scriptPubKey.IsPayToPubKey() {
 		pubKeyBytes := scriptPubKey.GetScriptBytes()[1 : scriptPubKey.GetScriptLength()-1]
-		newPubKey := new(pubkey.PubKey)
+		var newPubKey pubkey.PubKey
 		err := newPubKey.SetPubKeyData(pubKeyBytes)
 		if err == nil {
 			return true, TX_PUBKEY, [][]byte{pubKeyBytes}
@@ -112,13 +112,13 @@ func ExtractDestination(scriptPubKey Script) (bool, int, []string) {
 
 	// pubkey
 	if whichType == TX_PUBKEY {
-		soluPubKey := new(pubkey.PubKey)
+		var soluPubKey pubkey.PubKey
 		soluPubKey.SetPubKeyData(vSolutions[0])
 		soluKeyIDBytes, err := soluPubKey.CalcKeyIDBytes()
 		if err != nil {
 			return false, TX_NONSTANDARD, []string{}
 		}
-		soluKeyID := new(keyid.KeyID)
+		var soluKeyID keyid.KeyID
 		soluKeyID.SetKeyIDData(soluKeyIDBytes)
 		keyIDBase58, err := soluKeyID.ToBase58Address(0)
 		if err != nil {
@@ -129,7 +129,7 @@ func ExtractDestination(scriptPubKey Script) (bool, int, []string) {
 
 	// p2pkh
 	if whichType == TX_PUBKEYHASH {
-		soluKeyID := new(keyid.KeyID)
+		var soluKeyID keyid.KeyID
 		soluKeyID.SetKeyIDData(vSolutions[0])
 		keyIDBase58, err := soluKeyID.ToBase58Address(0)
 		if err != nil {
@@ -142,13 +142,13 @@ func ExtractDestination(scriptPubKey Script) (bool, int, []string) {
 	if whichType == TX_MULTISIG {
 		var keyIDsBase58 []string
 		for i := 0; i < len(vSolutions); i++ {
-			soluPubKey := new(pubkey.PubKey)
+			var soluPubKey pubkey.PubKey
 			soluPubKey.SetPubKeyData(vSolutions[i])
 			soluKeyIDBytes, err := soluPubKey.CalcKeyIDBytes()
 			if err != nil {
 				return false, TX_NONSTANDARD, []string{}
 			}
-			soluKeyID := new(keyid.KeyID)
+			var soluKeyID keyid.KeyID
 			soluKeyID.SetKeyIDData(soluKeyIDBytes)
 			keyIDBase58, err := soluKeyID.ToBase58Address(0)
 			if err != nil {
@@ -161,7 +161,7 @@ func ExtractDestination(scriptPubKey Script) (bool, int, []string) {
 
 	// p2sh
 	if whichType == TX_SCRIPTHASH {
-		soluKeyID := new(keyid.KeyID)
+		var soluKeyID keyid.KeyID
 		soluKeyID.SetKeyIDData(vSolutions[0])
 		keyIDBase58, err := soluKeyID.ToBase58Address(5)
 		if err != nil {
@@ -176,7 +176,7 @@ func ExtractDestination(scriptPubKey Script) (bool, int, []string) {
 
 	// p2wpkh
 	if whichType == TX_WITNESS_V0_KEYHASH {
-		soluKeyID := new(keyid.KeyID)
+		var soluKeyID keyid.KeyID
 		soluKeyID.SetKeyIDData(vSolutions[0])
 		keyIDBech32, err := soluKeyID.ToBech32AddressP2WPKH("bc")
 		if err != nil {

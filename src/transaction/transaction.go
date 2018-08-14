@@ -228,7 +228,7 @@ func (t Transaction) PackToHex() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	Blob := new(blob.Byteblob)
+	var Blob blob.Byteblob
 	Blob.SetData(bytesBuf.Bytes())
 	return Blob.GetHex(), nil
 }
@@ -263,9 +263,9 @@ func (t Transaction) CalcTrxId() (bigint.Uint256, error) {
 		return bigint.Uint256{}, err
 	}
 	bytesHash := utility.Sha256(utility.Sha256(bytesBuf.Bytes()))
-	ui256 := new(bigint.Uint256)
+	var ui256 bigint.Uint256
 	ui256.SetData(bytesHash)
-	return *ui256, nil
+	return ui256, nil
 }
 
 func (t *Transaction) unpackVin(reader io.Reader) (*[]TxIn, error) {
@@ -367,7 +367,7 @@ func (t *Transaction) UnPack(reader io.Reader) error {
 }
 
 func (t *Transaction) UnPackFromHex(hexStr string) error {
-	Blob := new(blob.Byteblob)
+	var Blob blob.Byteblob
 	err := Blob.SetHex(hexStr)
 	if err != nil {
 		return err
@@ -389,9 +389,9 @@ type TrxPrintAble struct {
 }
 
 func (t *Transaction) GetTrxPrintAble() TrxPrintAble {
-	trxPrintAble := new(TrxPrintAble)
+	var trxPrintAble TrxPrintAble
 	for _, vin := range t.Vin {
-		vinPrintAble := new(TxInPrintAble)
+		var vinPrintAble TxInPrintAble
 		vinPrintAble.PrevOut.Hash = vin.PrevOut.Hash.GetHex()
 		vinPrintAble.PrevOut.N = vin.PrevOut.N
 		if vin.PrevOut.Hash.GetHex() == "0000000000000000000000000000000000000000000000000000000000000000" {
@@ -403,10 +403,10 @@ func (t *Transaction) GetTrxPrintAble() TrxPrintAble {
 		for _, scriptWitness := range vin.ScriptWitness.GetScriptWitnessBytes() {
 			vinPrintAble.ScriptWitness = append(vinPrintAble.ScriptWitness, hex.EncodeToString(scriptWitness))
 		}
-		trxPrintAble.Vin = append(trxPrintAble.Vin, *vinPrintAble)
+		trxPrintAble.Vin = append(trxPrintAble.Vin, vinPrintAble)
 	}
 	for _, vout := range t.Vout {
-		voutPrintAble := new(TxOutPrintAble)
+		var voutPrintAble TxOutPrintAble
 		voutPrintAble.Value = vout.Value
 		voutPrintAble.ScriptPubKey = hex.EncodeToString(vout.ScriptPubKey.GetScriptBytes())
 		isSucc, scriptType, addresses := script.ExtractDestination(vout.ScriptPubKey)
@@ -421,9 +421,9 @@ func (t *Transaction) GetTrxPrintAble() TrxPrintAble {
 		}
 		voutPrintAble.Address = addrStr
 		voutPrintAble.ScriptType = script.GetScriptTypeStr(scriptType)
-		trxPrintAble.Vout = append(trxPrintAble.Vout, *voutPrintAble)
+		trxPrintAble.Vout = append(trxPrintAble.Vout, voutPrintAble)
 	}
 	trxPrintAble.Version = t.Version
 	trxPrintAble.LockTime = t.LockTime
-	return *trxPrintAble
+	return trxPrintAble
 }
