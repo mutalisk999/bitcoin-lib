@@ -121,14 +121,14 @@ func (b *Block) UnPack(reader io.Reader) error {
 	if err != nil {
 		return err
 	}
-	b.Vtx = make([]transaction.Transaction, 0, txCount)
+	b.Vtx = make([]transaction.Transaction, txCount, txCount)
 	for i := 0; i < int(txCount); i++ {
 		var tx transaction.Transaction
 		err = tx.UnPack(reader)
 		if err != nil {
 			return err
 		}
-		b.Vtx = append(b.Vtx, tx)
+		b.Vtx[i] = tx
 	}
 	return nil
 }

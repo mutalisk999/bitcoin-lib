@@ -274,14 +274,14 @@ func (t *Transaction) unpackVin(reader io.Reader) (*[]TxIn, error) {
 	if err != nil {
 		return nil, err
 	}
-	vin = make([]TxIn, 0, ui64)
+	vin = make([]TxIn, ui64, ui64)
 	for i := 0; i < int(ui64); i++ {
 		var v TxIn
 		err = v.UnPack(reader)
 		if err != nil {
 			return nil, err
 		}
-		vin = append(vin, v)
+		vin[i] = v
 	}
 	return &vin, nil
 }
@@ -292,14 +292,14 @@ func (t *Transaction) unpackVout(reader io.Reader) (*[]TxOut, error) {
 	if err != nil {
 		return nil, err
 	}
-	vout = make([]TxOut, 0, ui64)
+	vout = make([]TxOut, ui64, ui64)
 	for i := 0; i < int(ui64); i++ {
 		var v TxOut
 		err = v.UnPack(reader)
 		if err != nil {
 			return nil, err
 		}
-		vout = append(vout, v)
+		vout[i] = v
 	}
 	return &vout, nil
 }
@@ -390,26 +390,29 @@ type TrxPrintAble struct {
 
 func (t *Transaction) GetTrxPrintAble() TrxPrintAble {
 	var trxPrintAble TrxPrintAble
-	for _, vin := range t.Vin {
+	trxPrintAble.Vin = make([]TxInPrintAble, len(t.Vin), len(t.Vin))
+	trxPrintAble.Vout = make([]TxOutPrintAble, len(t.Vout), len(t.Vout))
+
+	for i := 0; i < len(t.Vin); i++ {
 		var vinPrintAble TxInPrintAble
-		vinPrintAble.PrevOut.Hash = vin.PrevOut.Hash.GetHex()
-		vinPrintAble.PrevOut.N = vin.PrevOut.N
-		if vin.PrevOut.Hash.GetHex() == "0000000000000000000000000000000000000000000000000000000000000000" {
+		vinPrintAble.PrevOut.Hash = t.Vin[i].PrevOut.Hash.GetHex()
+		vinPrintAble.PrevOut.N = t.Vin[i].PrevOut.N
+		if t.Vin[i].PrevOut.Hash.GetHex() == "0000000000000000000000000000000000000000000000000000000000000000" {
 			vinPrintAble.PrevOut.Hash = ""
 		}
-		vinPrintAble.ScriptSig = hex.EncodeToString(vin.ScriptSig.GetScriptBytes())
-		vinPrintAble.Sequence = vin.Sequence
+		vinPrintAble.ScriptSig = hex.EncodeToString(t.Vin[i].ScriptSig.GetScriptBytes())
+		vinPrintAble.Sequence = t.Vin[i].Sequence
 		vinPrintAble.ScriptWitness = []string{}
-		for _, scriptWitness := range vin.ScriptWitness.GetScriptWitnessBytes() {
+		for _, scriptWitness := range t.Vin[i].ScriptWitness.GetScriptWitnessBytes() {
 			vinPrintAble.ScriptWitness = append(vinPrintAble.ScriptWitness, hex.EncodeToString(scriptWitness))
 		}
-		trxPrintAble.Vin = append(trxPrintAble.Vin, vinPrintAble)
+		trxPrintAble.Vin[i] = vinPrintAble
 	}
-	for _, vout := range t.Vout {
+	for i := 0; i < len(t.Vout); i++ {
 		var voutPrintAble TxOutPrintAble
-		voutPrintAble.Value = vout.Value
-		voutPrintAble.ScriptPubKey = hex.EncodeToString(vout.ScriptPubKey.GetScriptBytes())
-		isSucc, scriptType, addresses := script.ExtractDestination(vout.ScriptPubKey)
+		voutPrintAble.Value = t.Vout[i].Value
+		voutPrintAble.ScriptPubKey = hex.EncodeToString(t.Vout[i].ScriptPubKey.GetScriptBytes())
+		isSucc, scriptType, addresses := script.ExtractDestination(t.Vout[i].ScriptPubKey)
 		var addrStr string
 		if isSucc {
 			addrStr = ""
@@ -421,7 +424,7 @@ func (t *Transaction) GetTrxPrintAble() TrxPrintAble {
 		}
 		voutPrintAble.Address = addrStr
 		voutPrintAble.ScriptType = script.GetScriptTypeStr(scriptType)
-		trxPrintAble.Vout = append(trxPrintAble.Vout, voutPrintAble)
+		trxPrintAble.Vout[i] = voutPrintAble
 	}
 	trxPrintAble.Version = t.Version
 	trxPrintAble.LockTime = t.LockTime

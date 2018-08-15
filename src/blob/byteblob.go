@@ -23,24 +23,25 @@ func (b *Byteblob) SetHex(hexStr string) error {
 		return errors.New("invalid hex string")
 	}
 	blobLength := len(hexStr) / 2
-	b.data = make([]byte, 0, blobLength)
+	b.data = make([]byte, blobLength, blobLength)
 	for i := 0; i < blobLength; i++ {
 		num1, _ := utility.HexCharToNumber(hexStr[2*i])
 		num2, _ := utility.HexCharToNumber(hexStr[2*i+1])
-		b.data = append(b.data, byte((num1<<4)|num2))
+		//b.data = append(b.data, byte((num1<<4)|num2))
+		b.data[i] = byte((num1 << 4) | num2)
 	}
 	return nil
 }
 
 func (b Byteblob) GetHex() string {
 	var bytes []byte
-	bytes = make([]byte, 0, 2*len(b.data))
-	for _, c := range b.data {
+	bytes = make([]byte, 2*len(b.data), 2*len(b.data))
+	for i := 0; i < len(b.data); i++ {
 		var h4b byte
 		var l4b byte
-		h4b, _ = utility.NumberToHexChar((c & 0xf0) >> 4)
-		l4b, _ = utility.NumberToHexChar(c & 0x0f)
-		bytes = append(bytes, h4b, l4b)
+		h4b, _ = utility.NumberToHexChar((b.data[i] & 0xf0) >> 4)
+		l4b, _ = utility.NumberToHexChar(b.data[i] & 0x0f)
+		bytes[2*i], bytes[2*i+1] = h4b, l4b
 	}
 	return string(bytes)
 }

@@ -65,14 +65,12 @@ func (p *PubKey) UnPack(reader io.Reader) error {
 	if err != nil {
 		return err
 	}
-	dataRead := make([]byte, u64)
+	dataRead := make([]byte, u64, u64)
 	_, err = reader.Read(dataRead[0:u64])
 	if err != nil {
 		return err
 	}
-	for _, c := range dataRead {
-		p.data = append(p.data, c)
-	}
+	p.data = dataRead
 	return nil
 }
 

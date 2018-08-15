@@ -31,11 +31,11 @@ func (b *Baseblob) SetHex(hexStr string) error {
 		return errors.New("invalid hex string")
 	}
 	blobLength := len(hexStr) / 2
-	b.data = make([]byte, 0, blobLength)
-	for i := blobLength - 1; i >= 0; i-- {
+	b.data = make([]byte, blobLength, blobLength)
+	for i, j := blobLength-1, 0; i >= 0; i, j = i-1, j+1 {
 		num1, _ := utility.HexCharToNumber(hexStr[2*i])
 		num2, _ := utility.HexCharToNumber(hexStr[2*i+1])
-		b.data = append(b.data, byte((num1<<4)|num2))
+		b.data[j] = byte((num1 << 4) | num2)
 	}
 	return nil
 }
@@ -43,13 +43,13 @@ func (b *Baseblob) SetHex(hexStr string) error {
 func (b Baseblob) GetHex() string {
 	var bytes []byte
 	dataRet := DataReverse(b.data)
-	bytes = make([]byte, 0, 2*len(dataRet))
-	for _, c := range dataRet {
+	bytes = make([]byte, 2*len(dataRet), 2*len(dataRet))
+	for i := 0; i < len(dataRet); i++ {
 		var h4b byte
 		var l4b byte
-		h4b, _ = utility.NumberToHexChar((c & 0xf0) >> 4)
-		l4b, _ = utility.NumberToHexChar(c & 0x0f)
-		bytes = append(bytes, h4b, l4b)
+		h4b, _ = utility.NumberToHexChar((dataRet[i] & 0xf0) >> 4)
+		l4b, _ = utility.NumberToHexChar(dataRet[i] & 0x0f)
+		bytes[2*i], bytes[2*i+1] = h4b, l4b
 	}
 	return string(bytes)
 }
