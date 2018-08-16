@@ -27,7 +27,6 @@ func (b *Byteblob) SetHex(hexStr string) error {
 	for i := 0; i < blobLength; i++ {
 		num1, _ := utility.HexCharToNumber(hexStr[2*i])
 		num2, _ := utility.HexCharToNumber(hexStr[2*i+1])
-		//b.data = append(b.data, byte((num1<<4)|num2))
 		b.data[i] = byte((num1 << 4) | num2)
 	}
 	return nil
