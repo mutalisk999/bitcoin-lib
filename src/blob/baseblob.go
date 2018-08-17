@@ -24,11 +24,11 @@ func (b *Baseblob) SetData(bytes []byte) {
 }
 
 func (b *Baseblob) SetHex(hexStr string) error {
-	if hexStr[0] == '0' && hexStr[1] == 'x' {
-		hexStr = hexStr[2:]
-	}
 	if !utility.IsValidHex(hexStr) {
 		return errors.New("invalid hex string")
+	}
+	if hexStr[0] == '0' && hexStr[1] == 'x' {
+		hexStr = hexStr[2:]
 	}
 	blobLength := len(hexStr) / 2
 	b.data = make([]byte, blobLength, blobLength)

@@ -29,11 +29,9 @@ func IsValidHex(hexStr string) bool {
 	if hexStr[0] == '0' && hexStr[1] == 'x' {
 		hexStr = hexStr[2:]
 	}
-
 	if len(hexStr)%2 == 1 {
 		return false
 	}
-
 	hexStr = strings.ToLower(hexStr)
 	for _, c := range []byte(hexStr) {
 		if !((c >= 0x30 && c <= 0x39) || (c >= 0x61 && c <= 0x66)) {
