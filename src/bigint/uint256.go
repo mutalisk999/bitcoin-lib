@@ -13,14 +13,15 @@ type Uint256 struct {
 }
 
 func (u Uint256) isValidHex(hexStr string) bool {
+	if !utility.IsValidHex(hexStr) {
+		return false
+	}
 	if hexStr[0] == '0' && hexStr[1] == 'x' {
 		hexStr = hexStr[2:]
 	}
-
 	if len(hexStr) != 64 {
 		return false
 	}
-
 	return true
 }
 
