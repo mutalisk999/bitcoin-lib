@@ -34,7 +34,7 @@ func ValidSize(pubKeyData []byte) bool {
 func (p *PubKey) SetPubKeyData(pubKeyBytes []byte) error {
 	isValid := ValidSize(pubKeyBytes)
 	if !isValid {
-		return errors.New("PubKey::SetPubKeyData : invalid pubkey size")
+		return errors.New("PubKey::SetPubKeyData: invalid pubkey size")
 	}
 	p.data = pubKeyBytes
 	return nil
@@ -43,7 +43,7 @@ func (p *PubKey) SetPubKeyData(pubKeyBytes []byte) error {
 func (p PubKey) GetPubKeyData() ([]byte, error) {
 	isValid := ValidSize(p.data)
 	if !isValid {
-		return []byte{}, errors.New("PubKey::GetPubKeyData : invalid pubkey size")
+		return []byte{}, errors.New("PubKey::GetPubKeyData: invalid pubkey size")
 	}
 	return p.data, nil
 }
@@ -77,7 +77,41 @@ func (p *PubKey) UnPack(reader io.Reader) error {
 func (p *PubKey) CalcKeyIDBytes() ([]byte, error) {
 	isValid := ValidSize(p.data)
 	if !isValid {
-		return []byte{}, errors.New("PubKey::CaclKeyIDBytes : invalid pubkey size")
+		return []byte{}, errors.New("PubKey::CaclKeyIDBytes: invalid pubkey size")
 	}
 	return utility.Hash160(p.data), nil
+}
+
+func GetUnCompressPubKey(pubKeyBytes []byte) (*PubKey, error) {
+	if len(pubKeyBytes) != 64 {
+		return nil, errors.New("GetUnCompressPubKey: invalid pubKeyBytes size")
+	}
+
+	pubKeyUnCompressBytes := make([]byte, 65, 65)
+	pubKeyUnCompressBytes[0] = 0x4
+	copy(pubKeyUnCompressBytes[1:], pubKeyBytes[0:64])
+
+	pubKey := new(PubKey)
+	pubKey.SetPubKeyData(pubKeyUnCompressBytes)
+
+	return pubKey, nil
+}
+
+func GetCompressPubKey(pubKeyBytes []byte) (*PubKey, error) {
+	if len(pubKeyBytes) != 64 {
+		return nil, errors.New("GetCompressPubKey: invalid pubKeyBytes size")
+	}
+
+	pubKeyCompressBytes := make([]byte, 33, 33)
+	if pubKeyBytes[63] % 2 == 0 {
+		pubKeyCompressBytes[0] = 0x2
+	} else {
+		pubKeyCompressBytes[0] = 0x3
+	}
+	copy(pubKeyCompressBytes[1:], pubKeyBytes[0:32])
+
+	pubKey := new(PubKey)
+	pubKey.SetPubKeyData(pubKeyCompressBytes)
+
+	return pubKey, nil
 }
