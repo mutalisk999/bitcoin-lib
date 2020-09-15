@@ -264,7 +264,7 @@ func (t Transaction) CalcTrxId() (bigint.Uint256, error) {
 	}
 	bytesHash := utility.Sha256(utility.Sha256(bytesBuf.Bytes()))
 	var ui256 bigint.Uint256
-	ui256.SetData(bytesHash)
+	_ = ui256.SetData(bytesHash)
 	return ui256, nil
 }
 

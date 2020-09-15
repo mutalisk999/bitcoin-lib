@@ -177,7 +177,7 @@ func CompactSizeLen(ui64 uint64) uint32 {
 	} else {
 		return 1 + 8
 	}
-	return 0
+	//return 0
 }
 
 func PackCompactSize(writer io.Writer, ui64 uint64) error {

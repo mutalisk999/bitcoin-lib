@@ -92,7 +92,7 @@ func GetUnCompressPubKey(pubKeyBytes []byte) (*PubKey, error) {
 	copy(pubKeyUnCompressBytes[1:], pubKeyBytes[0:64])
 
 	pubKey := new(PubKey)
-	pubKey.SetPubKeyData(pubKeyUnCompressBytes)
+	_ = pubKey.SetPubKeyData(pubKeyUnCompressBytes)
 
 	return pubKey, nil
 }
@@ -103,7 +103,7 @@ func GetCompressPubKey(pubKeyBytes []byte) (*PubKey, error) {
 	}
 
 	pubKeyCompressBytes := make([]byte, 33, 33)
-	if pubKeyBytes[63] % 2 == 0 {
+	if pubKeyBytes[63]%2 == 0 {
 		pubKeyCompressBytes[0] = 0x2
 	} else {
 		pubKeyCompressBytes[0] = 0x3
@@ -111,7 +111,7 @@ func GetCompressPubKey(pubKeyBytes []byte) (*PubKey, error) {
 	copy(pubKeyCompressBytes[1:], pubKeyBytes[0:32])
 
 	pubKey := new(PubKey)
-	pubKey.SetPubKeyData(pubKeyCompressBytes)
+	_ = pubKey.SetPubKeyData(pubKeyCompressBytes)
 
 	return pubKey, nil
 }

@@ -113,13 +113,13 @@ func ExtractDestination(scriptPubKey Script) (bool, int, []string) {
 	// pubkey
 	if whichType == TX_PUBKEY {
 		var soluPubKey pubkey.PubKey
-		soluPubKey.SetPubKeyData(vSolutions[0])
+		_ = soluPubKey.SetPubKeyData(vSolutions[0])
 		soluKeyIDBytes, err := soluPubKey.CalcKeyIDBytes()
 		if err != nil {
 			return false, TX_NONSTANDARD, []string{}
 		}
 		var soluKeyID keyid.KeyID
-		soluKeyID.SetKeyIDData(soluKeyIDBytes)
+		_ = soluKeyID.SetKeyIDData(soluKeyIDBytes)
 		keyIDBase58, err := soluKeyID.ToBase58Address(0)
 		if err != nil {
 			return false, TX_NONSTANDARD, []string{}
@@ -130,7 +130,7 @@ func ExtractDestination(scriptPubKey Script) (bool, int, []string) {
 	// p2pkh
 	if whichType == TX_PUBKEYHASH {
 		var soluKeyID keyid.KeyID
-		soluKeyID.SetKeyIDData(vSolutions[0])
+		_ = soluKeyID.SetKeyIDData(vSolutions[0])
 		keyIDBase58, err := soluKeyID.ToBase58Address(0)
 		if err != nil {
 			return false, TX_NONSTANDARD, []string{}
@@ -143,13 +143,13 @@ func ExtractDestination(scriptPubKey Script) (bool, int, []string) {
 		var keyIDsBase58 []string
 		for i := 0; i < len(vSolutions); i++ {
 			var soluPubKey pubkey.PubKey
-			soluPubKey.SetPubKeyData(vSolutions[i])
+			_ = soluPubKey.SetPubKeyData(vSolutions[i])
 			soluKeyIDBytes, err := soluPubKey.CalcKeyIDBytes()
 			if err != nil {
 				return false, TX_NONSTANDARD, []string{}
 			}
 			var soluKeyID keyid.KeyID
-			soluKeyID.SetKeyIDData(soluKeyIDBytes)
+			_ = soluKeyID.SetKeyIDData(soluKeyIDBytes)
 			keyIDBase58, err := soluKeyID.ToBase58Address(0)
 			if err != nil {
 				return false, TX_NONSTANDARD, []string{}
@@ -162,7 +162,7 @@ func ExtractDestination(scriptPubKey Script) (bool, int, []string) {
 	// p2sh
 	if whichType == TX_SCRIPTHASH {
 		var soluKeyID keyid.KeyID
-		soluKeyID.SetKeyIDData(vSolutions[0])
+		_ = soluKeyID.SetKeyIDData(vSolutions[0])
 		keyIDBase58, err := soluKeyID.ToBase58Address(5)
 		if err != nil {
 			return false, TX_NONSTANDARD, []string{}
@@ -177,7 +177,7 @@ func ExtractDestination(scriptPubKey Script) (bool, int, []string) {
 	// p2wpkh
 	if whichType == TX_WITNESS_V0_KEYHASH {
 		var soluKeyID keyid.KeyID
-		soluKeyID.SetKeyIDData(vSolutions[0])
+		_ = soluKeyID.SetKeyIDData(vSolutions[0])
 		keyIDBech32, err := soluKeyID.ToBech32AddressP2WPKH("bc")
 		if err != nil {
 			return false, TX_NONSTANDARD, []string{}

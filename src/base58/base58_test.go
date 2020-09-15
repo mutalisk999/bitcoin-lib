@@ -23,7 +23,7 @@ func initTestPairs() {
 	// pre-make the test pairs, so it doesn't take up benchmark time...
 	data := make([]byte, 32)
 	for i := 0; i < n; i++ {
-		rand.Read(data)
+		_, _ = rand.Read(data)
 		testPairs = append(testPairs, testValues{dec: data, enc: FastBase58Encoding(data)})
 	}
 }
@@ -32,7 +32,7 @@ func randAlphabet() *Alphabet {
 	// Permutes [0, 127] and returns the first 58 elements.
 	// Like (math/rand).Perm but using crypto/rand.
 	var randomness [128]byte
-	rand.Read(randomness[:])
+	_, _ = rand.Read(randomness[:])
 
 	var bts [128]byte
 	for i, r := range randomness {
@@ -55,7 +55,7 @@ func testEncDecLoop(t *testing.T, alph *Alphabet) {
 	for j := 1; j < 256; j++ {
 		var b = make([]byte, j)
 		for i := 0; i < 100; i++ {
-			rand.Read(b)
+			_, _ = rand.Read(b)
 			fe := FastBase58EncodingAlphabet(b, alph)
 			te := TrivialBase58EncodingAlphabet(b, alph)
 
@@ -105,7 +105,7 @@ func BenchmarkTrivialBase58Decoding(b *testing.B) {
 	b.ResetTimer()
 
 	for i := 0; i < b.N; i++ {
-		TrivialBase58Decoding(testPairs[i].enc)
+		_, _ = TrivialBase58Decoding(testPairs[i].enc)
 	}
 }
 
@@ -114,6 +114,6 @@ func BenchmarkFastBase58Decoding(b *testing.B) {
 	b.ResetTimer()
 
 	for i := 0; i < b.N; i++ {
-		FastBase58Decoding(testPairs[i].enc)
+		_, _ = FastBase58Decoding(testPairs[i].enc)
 	}
 }

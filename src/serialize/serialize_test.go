@@ -10,77 +10,77 @@ import (
 func TestPackByte(t *testing.T) {
 	bytesBuf := bytes.NewBuffer([]byte{})
 	bufWriter := io.Writer(bytesBuf)
-	PackByte(bufWriter, byte(0x01))
+	_ = PackByte(bufWriter, byte(0x01))
 	fmt.Println("pack byte:", bytesBuf.Bytes())
 }
 
 func TestPackInt8(t *testing.T) {
 	bytesBuf := bytes.NewBuffer([]byte{})
 	bufWriter := io.Writer(bytesBuf)
-	PackInt8(bufWriter, int8(-1))
+	_ = PackInt8(bufWriter, int8(-1))
 	fmt.Println("pack int8:", bytesBuf.Bytes())
 }
 
 func TestPackUint8(t *testing.T) {
 	bytesBuf := bytes.NewBuffer([]byte{})
 	bufWriter := io.Writer(bytesBuf)
-	PackUint8(bufWriter, uint8(0x01))
+	_ = PackUint8(bufWriter, uint8(0x01))
 	fmt.Println("pack uint8:", bytesBuf.Bytes())
 }
 
 func TestPackInt16(t *testing.T) {
 	bytesBuf := bytes.NewBuffer([]byte{})
 	bufWriter := io.Writer(bytesBuf)
-	PackInt16(bufWriter, int16(-1))
+	_ = PackInt16(bufWriter, int16(-1))
 	fmt.Println("pack int16:", bytesBuf.Bytes())
 }
 
 func TestPackUint16(t *testing.T) {
 	bytesBuf := bytes.NewBuffer([]byte{})
 	bufWriter := io.Writer(bytesBuf)
-	PackUint16(bufWriter, uint16(0x0102))
+	_ = PackUint16(bufWriter, uint16(0x0102))
 	fmt.Println("pack uint16:", bytesBuf.Bytes())
 }
 
 func TestPackInt32(t *testing.T) {
 	bytesBuf := bytes.NewBuffer([]byte{})
 	bufWriter := io.Writer(bytesBuf)
-	PackInt32(bufWriter, int32(-1))
+	_ = PackInt32(bufWriter, int32(-1))
 	fmt.Println("pack int32:", bytesBuf.Bytes())
 }
 
 func TestPackUint32(t *testing.T) {
 	bytesBuf := bytes.NewBuffer([]byte{})
 	bufWriter := io.Writer(bytesBuf)
-	PackUint32(bufWriter, uint32(0x01020304))
+	_ = PackUint32(bufWriter, uint32(0x01020304))
 	fmt.Println("pack uint32:", bytesBuf.Bytes())
 }
 
 func TestPackInt64(t *testing.T) {
 	bytesBuf := bytes.NewBuffer([]byte{})
 	bufWriter := io.Writer(bytesBuf)
-	PackInt64(bufWriter, int64(-1))
+	_ = PackInt64(bufWriter, int64(-1))
 	fmt.Println("pack int64:", bytesBuf.Bytes())
 }
 
 func TestPackUint64(t *testing.T) {
 	bytesBuf := bytes.NewBuffer([]byte{})
 	bufWriter := io.Writer(bytesBuf)
-	PackUint64(bufWriter, uint64(0x0102030405060708))
+	_ = PackUint64(bufWriter, uint64(0x0102030405060708))
 	fmt.Println("pack uint64:", bytesBuf.Bytes())
 }
 
 func TestPackFloat32(t *testing.T) {
 	bytesBuf := bytes.NewBuffer([]byte{})
 	bufWriter := io.Writer(bytesBuf)
-	PackFloat32(bufWriter, float32(1.234567))
+	_ = PackFloat32(bufWriter, float32(1.234567))
 	fmt.Println("pack float32:", bytesBuf.Bytes())
 }
 
 func TestPackFloat64(t *testing.T) {
 	bytesBuf := bytes.NewBuffer([]byte{})
 	bufWriter := io.Writer(bytesBuf)
-	PackFloat64(bufWriter, float64(1.23456789012345))
+	_ = PackFloat64(bufWriter, float64(1.23456789012345))
 	fmt.Println("pack float64:", bytesBuf.Bytes())
 }
 
@@ -94,13 +94,13 @@ func TestCompactSizeLen(t *testing.T) {
 func TestPackCompactSize(t *testing.T) {
 	bytesBuf := bytes.NewBuffer([]byte{})
 	bufWriter := io.Writer(bytesBuf)
-	PackCompactSize(bufWriter, 0x1f)
+	_ = PackCompactSize(bufWriter, 0x1f)
 	bufWriter = io.Writer(bytesBuf)
-	PackCompactSize(bufWriter, 0x1fff)
+	_ = PackCompactSize(bufWriter, 0x1fff)
 	bufWriter = io.Writer(bytesBuf)
-	PackCompactSize(bufWriter, 0x1fffffff)
+	_ = PackCompactSize(bufWriter, 0x1fffffff)
 	bufWriter = io.Writer(bytesBuf)
-	PackCompactSize(bufWriter, 0x1fffffffffffffff)
+	_ = PackCompactSize(bufWriter, 0x1fffffffffffffff)
 	fmt.Println("pack compact:", bytesBuf.Bytes())
 }
 

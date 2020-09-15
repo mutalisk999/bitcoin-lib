@@ -36,7 +36,7 @@ func IsNoneAddress(scriptType int) bool {
 	} else {
 		return true
 	}
-	return false
+	//return false
 }
 
 func GetScriptTypeStr(scriptType int) string {
@@ -61,5 +61,5 @@ func GetScriptTypeStr(scriptType int) string {
 	} else {
 		return "non-standard"
 	}
-	return "non-standard"
+	//return "non-standard"
 }
