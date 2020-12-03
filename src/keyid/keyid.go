@@ -4,7 +4,9 @@ import (
 	"errors"
 	"github.com/mutalisk999/bitcoin-lib/src/base58"
 	"github.com/mutalisk999/bitcoin-lib/src/bech32"
+	"github.com/mutalisk999/bitcoin-lib/src/serialize"
 	"github.com/mutalisk999/bitcoin-lib/src/utility"
+	"io"
 )
 
 const (
@@ -34,6 +36,32 @@ func (k KeyID) GetKeyIDData() ([]byte, error) {
 		return []byte{}, errors.New("KeyID::GetKeyIDData: invalid keyid size")
 	}
 	return k.data, nil
+}
+
+func (k KeyID) Pack(writer io.Writer) error {
+	err := serialize.PackCompactSize(writer, uint64(len(k.data)))
+	if err != nil {
+		return err
+	}
+	_, err = writer.Write(k.data[0:len(k.data)])
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (k *KeyID) UnPack(reader io.Reader) error {
+	u64, err := serialize.UnPackCompactSize(reader)
+	if err != nil {
+		return err
+	}
+	dataRead := make([]byte, u64, u64)
+	_, err = reader.Read(dataRead[0:u64])
+	if err != nil {
+		return err
+	}
+	k.data = dataRead
+	return nil
 }
 
 func (k KeyID) ToBase58Address(version byte) (string, error) {
